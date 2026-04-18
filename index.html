@@ -17,148 +17,165 @@
             background: #f5f5f5;
         }
         .container {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .qr {
-            margin: 1.5rem 0;
-        }
 
-        /* Add QR/Deep Link styles for mobile */
-        @media (max-width: 600px) {
-            .desktop-link {
-                display: none !important;
-            }
-            .mobile-link, .qr {
-                display: block !important;
-            }
-        }
-        @media (min-width: 601px) {
-            .mobile-link, .qr {
-                display: none !important;
-            }
-            .desktop-link {
-                display: block !important;
-            }
-        }
-        @media (max-width: 600px) {
-            .desktop-link {
-                display: none;
-            }
-            .mobile-link, .qr {
-                display: block;
-            }
-        }
-        @media (min-width: 601px) {
-            .mobile-link, .qr {
-                display: none;
-            }
-            .desktop-link {
-                display: block;
-            }
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Connect Your Wallet</h1>
-        <strong>💰 Crypto Only!</strong>
-        <p>We now accept cryptocurrency payments exclusively. Connect your wallet to book flights.</p>
-        <button id="connect-wallet-btn" style="margin-top:1.5rem; padding:1rem 2rem; font-size:1.1rem; background:#1976d2; color:#fff; border:none; border-radius:8px; cursor:pointer;">Connect Wallet</button>
-        <a id="walletconnect-deeplink" href="#" style="display:none; margin-top:1rem; font-size:1.1rem; color:#1976d2; text-decoration:underline;">Open in Wallet App (Mobile)</a>
-        <canvas id="qr" class="qr" style="display:none;"></canvas>
-        <div id="wallet-status" style="margin-top:1rem; font-size:1rem;"></div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-    <script>
-        let web3;
-        let provider;
-        let walletAddress = null;
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Modern Wallet Payment Connection</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                        min-height: 100vh;
+                        margin: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .app-container {
+                        background: #fff;
+                        border-radius: 16px;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+                        padding: 2.5rem 2rem;
+                        max-width: 400px;
+                        width: 100%;
+                        text-align: center;
+                    }
+                    .wallet-status {
+                        margin: 1.5rem 0 1rem 0;
+                        font-size: 1.1rem;
+                        font-weight: 500;
+                        color: #1976d2;
+                        word-break: break-all;
+                    }
+                    .wallet-address {
+                        background: #f0f4f8;
+                        border-radius: 8px;
+                        padding: 0.75rem 1rem;
+                        font-family: 'Fira Mono', monospace;
+                        font-size: 1rem;
+                        color: #333;
+                        margin-bottom: 1.5rem;
+                        word-break: break-all;
+                    }
+                    .connect-btn {
+                        background: #1976d2;
+                        color: #fff;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 1rem 2rem;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: background 0.2s;
+                        margin-bottom: 1rem;
+                    }
+                    .connect-btn:hover {
+                        background: #1251a3;
+                    }
+                    .wallet-icon {
+                        font-size: 2.5rem;
+                        margin-bottom: 1rem;
+                        color: #1976d2;
+                    }
+                    .error {
+                        color: #dc2626;
+                        margin-top: 1rem;
+                        font-size: 1rem;
+                    }
+                    .success {
+                        color: #10b981;
+                        margin-top: 1rem;
+                        font-size: 1rem;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="app-container">
+                    <div class="wallet-icon"><i class="fa-brands fa-ethereum"></i></div>
+                    <h2>Connect Your Wallet</h2>
+                    <div id="wallet-status" class="wallet-status">Connecting...</div>
+                    <div id="wallet-address" class="wallet-address" style="display:none;"></div>
+                    <button id="connect-btn" class="connect-btn" style="display:none;">Connect Wallet</button>
+                    <div id="error-message" class="error"></div>
+                    <div id="success-message" class="success"></div>
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+                <script>
+                    let web3;
+                    let provider;
+                    let walletAddress = null;
+                    const walletStatus = document.getElementById('wallet-status');
+                    const walletAddressDiv = document.getElementById('wallet-address');
+                    const connectBtn = document.getElementById('connect-btn');
+                    const errorDiv = document.getElementById('error-message');
+                    const successDiv = document.getElementById('success-message');
 
-        // WalletConnect URI for QR/deep link
-        let walletConnectURI = '';
-
-        async function connectWallet() {
-            const statusDiv = document.getElementById('wallet-status');
-            statusDiv.textContent = '';
-            statusDiv.style.color = '';
-            // Try MetaMask first
-            if (window.ethereum) {
-                try {
-                    provider = window.ethereum;
-                    await provider.request({ method: 'eth_requestAccounts' });
-                    web3 = new Web3(provider);
-                    const accounts = await web3.eth.getAccounts();
-                    walletAddress = accounts[0];
-                    statusDiv.textContent = '✅ Connected: ' + walletAddress;
-                    statusDiv.style.color = '#10b981';
-                } catch (err) {
-                    statusDiv.textContent = 'MetaMask connection failed: ' + err.message;
-                    statusDiv.style.color = '#dc2626';
-                }
-            } else {
-                // Fallback to WalletConnect
-                try {
-                    provider = new window.WalletConnectProvider.default({
-                        infuraId: '8043bb2cf316cb6b519b6724a4ce1d86'
-                    });
-                    // Listen for display_uri event to get the QR/deep link
-                    provider.connector.on('display_uri', (err, payload) => {
-                        if (!err && payload && payload.params && payload.params[0]) {
-                            walletConnectURI = payload.params[0];
-                            updateWalletConnectUI();
+                    async function tryConnectWallet(auto = false) {
+                        errorDiv.textContent = '';
+                        successDiv.textContent = '';
+                        walletStatus.textContent = auto ? 'Connecting...' : '';
+                        walletStatus.style.color = '#1976d2';
+                        connectBtn.style.display = 'none';
+                        walletAddressDiv.style.display = 'none';
+                        // Try MetaMask/Uniswap (EIP-1193)
+                        if (window.ethereum) {
+                            try {
+                                provider = window.ethereum;
+                                await provider.request({ method: 'eth_requestAccounts' });
+                                web3 = new Web3(provider);
+                                const accounts = await web3.eth.getAccounts();
+                                walletAddress = accounts[0];
+                                walletStatus.textContent = 'Wallet Connected!';
+                                walletStatus.style.color = '#10b981';
+                                walletAddressDiv.textContent = walletAddress;
+                                walletAddressDiv.style.display = 'block';
+                                successDiv.textContent = 'You are connected to ' + (provider.isMetaMask ? 'MetaMask' : provider.isUniswap ? 'Uniswap Wallet' : 'your wallet') + '.';
+                                return;
+                            } catch (err) {
+                                errorDiv.textContent = 'Connection failed: ' + err.message;
+                                walletStatus.textContent = 'Not connected';
+                                walletStatus.style.color = '#dc2626';
+                                connectBtn.style.display = 'inline-block';
+                            }
+                        } else {
+                            // Fallback to WalletConnect
+                            try {
+                                provider = new window.WalletConnectProvider.default({
+                                    infuraId: '8043bb2cf316cb6b519b6724a4ce1d86'
+                                });
+                                await provider.enable();
+                                web3 = new Web3(provider);
+                                const accounts = await web3.eth.getAccounts();
+                                walletAddress = accounts[0];
+                                walletStatus.textContent = 'Wallet Connected!';
+                                walletStatus.style.color = '#10b981';
+                                walletAddressDiv.textContent = walletAddress;
+                                walletAddressDiv.style.display = 'block';
+                                successDiv.textContent = 'You are connected via WalletConnect.';
+                                return;
+                            } catch (err) {
+                                errorDiv.textContent = 'No wallet found. Please install MetaMask, Uniswap, or use WalletConnect.';
+                                walletStatus.textContent = 'Not connected';
+                                walletStatus.style.color = '#dc2626';
+                                connectBtn.style.display = 'inline-block';
+                            }
                         }
+                    }
+
+                    // Try to connect on load
+                    window.addEventListener('DOMContentLoaded', function() {
+                        tryConnectWallet(true);
+                        connectBtn.addEventListener('click', function() {
+                            tryConnectWallet(false);
+                        });
                     });
-                    await provider.enable();
-                    web3 = new Web3(provider);
-                    const accounts = await web3.eth.getAccounts();
-                    walletAddress = accounts[0];
-                    statusDiv.textContent = '✅ Connected (WalletConnect): ' + walletAddress;
-                    statusDiv.style.color = '#10b981';
-                } catch (err) {
-                    statusDiv.textContent = 'WalletConnect failed: ' + err.message;
-                    statusDiv.style.color = '#dc2626';
-                }
-            }
-        }
-
-        function isMobile() {
-            return window.innerWidth <= 600;
-        }
-
-        function updateWalletConnectUI() {
-            const qrCanvas = document.getElementById('qr');
-            const deeplink = document.getElementById('walletconnect-deeplink');
-            if (!walletConnectURI) {
-                qrCanvas.style.display = 'none';
-                deeplink.style.display = 'none';
-                return;
-            }
-            if (isMobile()) {
-                qrCanvas.style.display = 'none';
-                deeplink.style.display = 'inline-block';
-                deeplink.href = walletConnectURI;
-            } else {
-                deeplink.style.display = 'none';
-                qrCanvas.style.display = 'block';
-                new QRious({
-                    element: qrCanvas,
-                    value: walletConnectURI,
-                    size: 120
-                });
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('connect-wallet-btn').addEventListener('click', connectWallet);
-            updateWalletConnectUI();
-        });
-        window.addEventListener('resize', updateWalletConnectUI);
-    </script>
+                </script>
+            </body>
+            </html>
 </body>
 </html>
