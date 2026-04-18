@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digi Airlines - Your Journey, Our Passion</title>
+    <title>AB&T Airlines - Your Journey, Our Passion</title>
     <style>
         * {
             margin: 0;
@@ -488,36 +488,61 @@
             border-top: 1px solid #444;
             padding-top: 1rem;
         }
+.code {
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 0.25rem 0.4rem;
+    border-radius: 4px;
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
-        }
+    overflow-wrap: anywhere;
+}
+    .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
 
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 500px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    background-color: rgba(0, 0, 0, 0.5);
 
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+
+    width: 90%;
+    max-width: 500px;
+
+    box-sizing: border-box;
+
+    /* Prevent text/content overflow */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    /* Prevent modal from growing off-screen */
+    max-height: 80vh;
+    overflow-y: auto;
+
+    /* Animation */
+    transform: translateY(20px);
+    transition: transform 0.2s ease;
+}
+
+.modal.open .modal-content {
+    transform: translateY(0);
+}
         .close:hover {
             color: var(--text-dark);
         }
@@ -1877,6 +1902,493 @@
             }
         }
     </style>
+    <style id="patriotic-bitcoin-theme">
+:root {
+    --primary-color: #0a3161;      /* deep navy (US flag blue) */
+    --secondary-color: #b31942;    /* flag red */
+    --accent-color: #f7931a;       /* Bitcoin orange */
+    --gold-accent: #ffd700;
+    --dark-bg: #0b1f3a;
+    --light-bg: #f4f7fb;
+    --text-dark: #1a1a1a;
+    --text-light: #555;
+    --crypto-green: #10b981;
+}
+
+/* Subtle background texture */
+body {
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f4f7fb 100%
+    );
+}
+
+/* HEADER — more bold + patriotic */
+header {
+    background: linear-gradient(
+        135deg,
+        #0a3161 0%,
+        #0a3161 60%,
+        #b31942 100%
+    );
+    border-bottom: 3px solid var(--accent-color);
+}
+
+/* Add subtle stars effect */
+header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+/* LOGO — stronger presence */
+.logo {
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+/* NAV hover — more “gold pop” */
+nav a:hover {
+    color: var(--gold-accent);
+}
+
+/* HERO — bold patriotic gradient */
+.hero {
+    background: linear-gradient(
+        135deg,
+        #0a3161 0%,
+        #1e3a8a 40%,
+        #b31942 100%
+    );
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle stripe overlay */
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    pointer-events: none;
+}
+
+/* Buttons — more Bitcoin + bold feel */
+.btn-primary {
+    background: linear-gradient(135deg, #f7931a, #ffb347);
+    color: #1a1a1a;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(247,147,26,0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(247,147,26,0.6);
+}
+
+/* Wallet button — premium crypto feel */
+.wallet-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 15px rgba(16,185,129,0.4);
+}
+
+.wallet-btn:hover {
+    transform: scale(1.08);
+}
+
+/* Cards — more depth */
+.route-card {
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.route-header {
+    background: linear-gradient(
+        135deg,
+        #0a3161 0%,
+        #1e3a8a 100%
+    );
+    position: relative;
+}
+
+/* subtle top stripe */
+.route-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #b31942, #ffffff, #0a3161);
+}
+
+/* Prices — emphasize BTC feel */
+.route-price {
+    color: var(--secondary-color);
+}
+
+.route-price-crypto {
+    color: var(--accent-color);
+    font-weight: 800;
+}
+
+/* Search box — cleaner + premium */
+.search-container {
+    border: 2px solid rgba(10,49,97,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Inputs — more modern */
+.form-group input,
+.form-group select {
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(247,147,26,0.2);
+}
+
+/* Section titles — stronger hierarchy */
+.section-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* Footer — strong dark patriotic base */
+footer {
+    background: linear-gradient(
+        135deg,
+        #0a3161 0%,
+        #111827 100%
+    );
+    border-top: 3px solid var(--accent-color);
+}
+
+/* Modal — cleaner + more premium */
+.modal-content {
+    border: 2px solid rgba(10,49,97,0.15);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+}
+
+/* Payment cards — trust + clarity */
+.payment-step-section {
+    border: 1px solid rgba(10,49,97,0.1);
+}
+
+/* Progress active — more emphasis */
+.progress-step.active .progress-number {
+    background: linear-gradient(135deg, #0a3161, #1e3a8a);
+}
+
+/* Confirmation — stronger success signal */
+.confirmation-header {
+    background: linear-gradient(
+        135deg,
+        #10b981 0%,
+        #047857 100%
+    );
+}
+
+/* Notification — more “crypto premium” */
+.notification-toast {
+    border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Gold coin glow boost */
+.coin-front {
+    box-shadow:
+        inset -2px -2px 5px rgba(0,0,0,0.2),
+        inset 2px 2px 5px rgba(255,255,255,0.8),
+        0 10px 30px rgba(247,147,26,0.6);
+}
+</style>
+    <style id="americana-coinbase-theme">
+:root {
+    /* Core palette */
+    --primary-color: #0a3161;     /* aviation navy */
+    --secondary-color: #b31942;   /* American red */
+    --accent-color: #f7931a;      /* Bitcoin orange */
+    --accent-soft: #ffb347;
+    --dark-bg: #0b1f3a;
+    --light-bg: #f6f8fb;
+    --text-dark: #111827;
+    --text-light: #6b7280;
+    --crypto-green: #10b981;
+
+    --border-subtle: rgba(0,0,0,0.06);
+    --shadow-soft: 0 10px 30px rgba(0,0,0,0.08);
+    --shadow-strong: 0 20px 60px rgba(0,0,0,0.18);
+}
+
+/* GLOBAL */
+body {
+    background: var(--light-bg);
+    color: var(--text-dark);
+}
+
+/* HEADER — clean airline feel */
+header {
+    background: #ffffff;
+    color: var(--text-dark);
+    border-bottom: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.logo {
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+}
+
+.logo-icon {
+    color: var(--accent-color);
+}
+
+/* NAV */
+nav a {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
+
+/* WALLET BUTTON — Coinbase style */
+.wallet-btn {
+    background: var(--primary-color);
+    box-shadow: 0 4px 14px rgba(10,49,97,0.3);
+    border-radius: 8px;
+}
+
+.wallet-btn:hover {
+    background: #07244a;
+    transform: translateY(-2px);
+}
+
+/* HERO — aviation gradient */
+.hero {
+    background: linear-gradient(
+        135deg,
+        #0a3161 0%,
+        #1e3a8a 60%,
+        #0b1f3a 100%
+    );
+    position: relative;
+}
+
+/* subtle top stripe */
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background: linear-gradient(90deg, #b31942, #ffffff, #0a3161);
+}
+
+/* HERO TEXT */
+.hero h1 {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.hero p {
+    opacity: 0.9;
+}
+
+/* BUTTONS — fintech polish */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-soft));
+    color: #111;
+    box-shadow: 0 6px 20px rgba(247,147,26,0.35);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(247,147,26,0.5);
+}
+
+.btn-secondary {
+    background: white;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* SEARCH CARD — Coinbase clean panel */
+.search-container {
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-soft);
+}
+
+/* INPUTS */
+.form-group input,
+.form-group select {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(10,49,97,0.15);
+}
+
+/* ROUTE CARDS — airline ticket feel */
+.route-card {
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+/* route header = ticket strip */
+.route-header {
+    background: white;
+    color: var(--primary-color);
+    border-bottom: 2px dashed #d1d5db;
+    position: relative;
+}
+
+/* perforation dots */
+.route-header::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background:
+        radial-gradient(circle, #d1d5db 4px, transparent 5px) repeat-x;
+    background-size: 20px 12px;
+}
+
+/* PRICE */
+.route-price {
+    color: var(--secondary-color);
+    font-weight: 800;
+}
+
+.route-price-crypto {
+    color: var(--accent-color);
+    font-weight: 800;
+}
+
+/* BUTTON */
+.route-btn {
+    background: var(--primary-color);
+    border-radius: 8px;
+}
+
+.route-btn:hover {
+    background: #07244a;
+}
+
+/* SECTION TITLES */
+.section-title {
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* MODAL — fintech card */
+.modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-strong);
+}
+
+/* PAYMENT UI — Coinbase style */
+.payment-step-section {
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-soft);
+}
+
+/* FLIGHT CARD */
+.flight-info-card {
+    background: linear-gradient(
+        135deg,
+        #0a3161,
+        #1e3a8a
+    );
+}
+
+/* SUMMARY */
+.payment-summary {
+    background: #ffffff;
+    border: 2px solid var(--primary-color);
+}
+
+/* PROGRESS */
+.progress-number {
+    border: 2px solid #d1d5db;
+}
+
+.progress-step.active .progress-number {
+    background: var(--primary-color);
+}
+
+.progress-step.completed .progress-number {
+    background: var(--crypto-green);
+}
+
+/* FOOTER */
+footer {
+    background: #0b1f3a;
+    border-top: 4px solid var(--primary-color);
+}
+
+/* TOAST */
+.notification-toast {
+    border-radius: 12px;
+    box-shadow: var(--shadow-strong);
+}
+
+/* COIN — premium shine */
+.coin-front {
+    background: linear-gradient(
+        135deg,
+        #f7931a,
+        #ffd27a,
+        #f7931a
+    );
+    box-shadow:
+        0 12px 40px rgba(247,147,26,0.5);
+}
+
+/* MICRO-INTERACTIONS */
+.route-card:hover,
+.search-container:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-strong);
+    transition: all 0.25s ease;
+}
+</style>
 </head>
 <body>
     <!-- Header -->
@@ -1884,7 +2396,7 @@
         <div class="header-container">
             <div class="logo">
                 <span class="logo-icon">✈️</span>
-                <span data-en="Digi Airlines" data-it="Digi Airlines">Digi Airlines</span>
+                <span data-en="AB&T Airlines" data-it="AB&T Airlines">AB&T Airlines</span>
             </div>
             <div class="nav-right">
                 <button class="menu-toggle" onclick="toggleMenu()">☰</button>
@@ -1910,7 +2422,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <h1 data-en="Fly with Us, Fly with Friends" data-it="Vola con Noi, Vola con Amici">Fly with Us, Fly with Friends</h1>
-        <p data-en="Experience premium travel with Digi Airlines - where every journey is an adventure" data-it="Sperimenta viaggi premium con Digi Airlines - dove ogni viaggio è un'avventura">Experience premium travel with Digi Airlines - where every journey is an adventure</p>
+        <p data-en="Experience premium travel with AB&T Airlines - where every journey is an adventure" data-it="Sperimenta viaggi premium con AB&T Airlines - dove ogni viaggio è un'avventura">Experience premium travel with AB&T Airlines - where every journey is an adventure</p>
         <div class="crypto-notice">
             <strong data-en="💰 Crypto Only!" data-it="💰 Solo Cripto!">💰 Crypto Only!</strong>
             <p data-en="We now accept cryptocurrency payments exclusively. Connect your wallet to book flights." data-it="Ora accettiamo pagamenti in criptovaluta esclusivamente. Connetti il tuo portafoglio per prenotare i voli.">We now accept cryptocurrency payments exclusively. Connect your wallet to book flights.</p>
@@ -1984,10 +2496,10 @@
         <div class="about-container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2 data-en="About Digi Airlines" data-it="Su Digi Airlines">About Digi Airlines</h2>
-                    <p data-en="Digi Airlines is a modern airline dedicated to connecting travelers across the United States and Europe with comfort, reliability, and a seamless digital-first experience." data-it="Digi Airlines è una compagnia aerea moderna dedicata a collegare i viaggiatori tra Stati Uniti ed Europa con comfort, affidabilità e un'esperienza digitale moderna.">Digi Airlines is a modern airline dedicated to connecting travelers across the United States and Europe with comfort, reliability, and a seamless digital-first experience.</p>
+                    <h2 data-en="About AB&T Airlines" data-it="Su AB&T Airlines">About AB&T Airlines</h2>
+                    <p data-en="Founded by Addison Boyer, Asia, Brad, and Tommy, we're a modern airline dedicated to connecting people across the United States and Europe with comfort, reliability, and a personal touch." data-it="Fondata da Addison Boyer, Asia, Brad e Tommy, siamo una compagnia aerea moderna dedicata a connettere le persone negli Stati Uniti e in Europa con comfort, affidabilità e un tocco personale.">Founded by Addison Boyer, Asia, Brad, and Tommy, we're a modern airline dedicated to connecting people across the United States and Europe with comfort, reliability, and a personal touch.</p>
                     <p data-en="Our fleet is carefully curated to provide the best experience whether you're traveling for business or leisure. We believe in making air travel accessible, affordable, and enjoyable." data-it="La nostra flotta è accuratamente selezionata per fornire la migliore esperienza sia che tu stia viaggiando per affari o piacere. Crediamo nel rendere i viaggi aerei accessibili, convenienti e piacevoli.">Our fleet is carefully curated to provide the best experience whether you're traveling for business or leisure. We believe in making air travel accessible, affordable, and enjoyable.</p>
-                    <p data-en="With a focus on customer satisfaction and innovative service, Digi Airlines is your trusted partner for every journey." data-it="Con un focus sulla soddisfazione del cliente e servizi innovativi, Digi Airlines è il tuo partner affidabile per ogni viaggio.">With a focus on customer satisfaction and innovative service, Digi Airlines is your trusted partner for every journey.</p>
+                    <p data-en="With a focus on customer satisfaction and innovative service, AB&T Airlines is your trusted partner for every journey." data-it="Con un focus sulla soddisfazione del cliente e servizi innovativi, AB&T Airlines è il tuo partner affidabile per ogni viaggio.">With a focus on customer satisfaction and innovative service, AB&T Airlines is your trusted partner for every journey.</p>
                     <div class="about-stats">
                         <div class="stat">
                             <div class="stat-number">4</div>
@@ -2010,7 +2522,7 @@
                 <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); border-radius: 10px; padding: 2rem; color: white; text-align: center;">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">✈️</div>
                     <h3 data-en="Ready to Fly?" data-it="Pronto a Volare?">Ready to Fly?</h3>
-                    <p style="margin-top: 1rem;" data-en="Join travelers worldwide who trust Digi Airlines" data-it="Unisciti ai viaggiatori di tutto il mondo che si affidano a Digi Airlines">Join travelers worldwide who trust Digi Airlines</p>
+                    <p style="margin-top: 1rem;" data-en="Join thousands of satisfied passengers who trust AB&T Airlines" data-it="Unisciti a migliaia di passeggeri soddisfatti che si fidano di AB&T Airlines">Join thousands of satisfied passengers who trust AB&T Airlines</p>
                     <button class="btn btn-primary" style="margin-top: 1rem;" onclick="scrollToSection('search')" data-en="Book Your Flight" data-it="Prenota il Tuo Volo">Book Your Flight</button>
                 </div>
             </div>
@@ -2025,7 +2537,7 @@
                 <a href="#search" data-en="Book Flight" data-it="Prenota Volo">Book Flight</a>
                 <a href="#routes" data-en="Routes" data-it="Rotte">Routes</a>
                 <a href="#map" data-en="Network" data-it="Rete">Network</a>
-                <a href="#about" data-en="About Us" data-it="Chi Siamo">About Us</a>
+                <a href="#about" data-en="About" data-it="Chi Siamo">About</a>
             </div>
             <div class="footer-section">
                 <h3 data-en="Support" data-it="Supporto">Support</h3>
@@ -2043,7 +2555,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p data-en="© 2024 Digi Airlines. All rights reserved. ✈️" data-it="© 2024 Digi Airlines. Tutti i diritti riservati. ✈️">© 2024 Digi Airlines. All rights reserved. ✈️</p>
+            <p data-en="© 2024 AB&T Airlines. All rights reserved. ✈️" data-it="© 2024 AB&T Airlines. Tutti i diritti riservati. ✈️">© 2024 AB&T Airlines. All rights reserved. ✈️</p>
         </div>
     </footer>
 
@@ -2183,7 +2695,7 @@
                         </div>
 
                         <div style="margin-bottom: 1.5rem;">
-                            <label style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;" data-en="To Digi Airlines" data-it="A Digi Airlines">To Digi Airlines</label>
+                            <label style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;" data-en="To AB&T Airlines" data-it="A AB&T Airlines">To AB&T Airlines</label>
                             <div class="address-box-value">0x834F4FE6A07a9C8C67846Bb435D413e6033cd5cf</div>
                         </div>
                     </div>
@@ -2204,8 +2716,12 @@
                 <!-- Step 4: Confirm & Pay -->
                 <div id="payment-step-4" style="display: none;">
                     <div class="confirmation-header">
-                        <h3 data-en="Confirm Payment" data-it="Conferma Pagamento">Confirm Payment</h3>
-                        <p data-en="Slide to complete your booking" data-it="Scorri per completare la tua prenotazione">Slide to complete your booking</p>
+                        <h3 data-en="Security Verification" data-it="Verifica di Sicurezza">
+                            Security Verification
+                        </h3>
+                        <p data-en="Select the correct shape to continue" data-it="Seleziona la forma corretta per continuare">
+                            Select the correct shape to continue
+                        </p>
                     </div>
 
                     <div class="payment-step-section">
@@ -2261,7 +2777,7 @@
         let walletConnected = false;
         let walletAddress = '';
         let web3 = null;
-        let connector = null;
+        let activeProvider = null;
         let currentLanguage = 'en';
         let currentRoute = null;
         let currentPassengers = 0;
@@ -2277,7 +2793,7 @@
         let gasPriceCacheTime = 0;
         const GAS_PRICE_CACHE_DURATION = 30000; // 30 seconds
         const GAS_PRICE_TIMEOUT = 5000; // 5 second timeout
-        const GAS_PRICE_FALLBACK = web3 ? web3.utils.toWei('50', 'gwei') : null;
+        const GAS_PRICE_FALLBACK = '50000000000'; // 50 gwei fallback in wei
 
         // Initialize Web3
         function initWeb3() {
@@ -2299,19 +2815,17 @@
                     throw new Error('This page must be served over http://localhost, not opened as a file. Start a local web server and try again.');
                 }
 
-                let provider;
+                let provider = null;
 
-                // First try MetaMask / injected wallet
                 if (typeof window.ethereum !== 'undefined') {
                     console.log('Injected wallet detected, using window.ethereum');
                     provider = window.ethereum;
                 } else {
-                    // Fallback: WalletConnect provider
                     console.log('Injected wallet not found, attempting WalletConnect...');
                     const WalletConnectProvider = window.WalletConnectProvider?.default || window.WalletConnectProvider;
 
                     if (!WalletConnectProvider) {
-                        throw new Error('WalletConnect provider failed to load');
+                        throw new Error('No wallet provider available. Install MetaMask or use a browser with an injected wallet.');
                     }
 
                     provider = new WalletConnectProvider({
@@ -2324,22 +2838,18 @@
                     }
                 }
 
-                // Request accounts
-                const accounts = await provider.request({ 
-                    method: 'eth_requestAccounts' 
+                const accounts = await provider.request({
+                    method: 'eth_requestAccounts'
                 });
 
                 if (!accounts || accounts.length === 0) {
                     throw new Error('No accounts returned');
                 }
 
+                activeProvider = provider;
                 walletAddress = accounts[0];
                 walletConnected = true;
-                
-                // Initialize Web3 with the provider
-                if (!web3) {
-                    web3 = new Web3(provider);
-                }
+                web3 = new Web3(provider);
 
                 console.log('Wallet connected successfully!');
                 console.log('Address:', walletAddress);
@@ -2349,12 +2859,9 @@
 
                 hidePaymentLoader();
 
-                const msg = currentLanguage === 'en' 
-                    ? walletAddress.substring(0, 6) + '...' + walletAddress.substring(38)
-                    : walletAddress.substring(0, 6) + '...' + walletAddress.substring(38);
+                const msg = walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4);
                 showNotification(msg, 'success', currentLanguage === 'en' ? 'Wallet Connected' : 'Portafoglio Connesso');
 
-                // Setup account change listener
                 if (provider.on) {
                     provider.on('accountsChanged', handleAccountsChanged);
                     provider.on('chainChanged', handleChainChanged);
@@ -2364,8 +2871,8 @@
             } catch (error) {
                 hidePaymentLoader();
                 console.error('Wallet connection failed:', error);
-                
-                const msg = currentLanguage === 'en' 
+
+                const msg = currentLanguage === 'en'
                     ? 'Connection failed: ' + error.message
                     : 'Connessione fallita: ' + error.message;
                 showNotification(msg, 'error', currentLanguage === 'en' ? 'Connection Failed' : 'Connessione Fallita');
@@ -2437,9 +2944,18 @@
                 // Convert gasPrice to hex string for MetaMask compatibility
                 const gasPrice = web3.utils.toHex(gasPriceRaw);
                 
-                // Always pass ethAmount as a string, and avoid .toFixed() for toWei
-                const weiValue = web3.utils.toWei(String(ethAmount), 'ether');
-
+                // Convert ETH to wei
+                console.log(ethAmount.toString());
+                const weiValue = web3.utils.toWei(ethAmount.toString(), 'ether');
+                
+                // Validate wei value is reasonable (< 100 ETH in wei)
+                const weiLimit = web3.utils.toWei('1', 'ether');
+                const BN = web3.utils.BN;
+                
+                if (new BN(weiValue).gt(new BN(weiLimit))) {
+                    throw new Error('Amount exceeds safety limit');
+                }
+                
                 const txData = {
                     from: walletAddress,
                     to: toAddress,
@@ -2566,13 +3082,13 @@
             'MXP': { 
                 lat: 45.6295, 
                 lng: 8.7281, 
-                name: { en: 'Milan - Malpensa (MXP)', it: 'Milano - Malpensa (MXP)' },
+                name: { en: 'Milan - Malpensa', it: 'Milano - Malpensa' },
                 country: { en: 'Italy', it: 'Italia' }
             },
             'MSO': { 
                 lat: 46.8722, 
                 lng: -113.9940, 
-                name: { en: 'Missoula (MSO)', it: 'Missoula (MSO)' },
+                name: { en: 'Missoula', it: 'Missoula' },
                 country: { en: 'United States', it: 'Stati Uniti' }
             }
         };
@@ -2672,11 +3188,11 @@
             setTimeout(() => hidePaymentLoader(), 300);
         }
 
-        async function updateStep1() {
+        function updateStep1() {
             if (!currentRoute) return;
-            // 30% heavily discounted price
-            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
-            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = (totalPriceUSD * 0.00003).toFixed(6);
             const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
 
             const fromText = currentRoute.from[currentLanguage];
@@ -2703,9 +3219,9 @@
             updatePaymentWalletSection();
         }
 
-        async function updateStep3() {
-            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
-            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+        function updateStep3() {
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = (totalPriceUSD * 0.00003).toFixed(6);
             const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
 
             const el1 = document.getElementById('step3-from-wallet');
@@ -2715,9 +3231,9 @@
             if (el2) el2.textContent = `${totalWithGas} ETH`;
         }
 
-        async function updateStep4() {
-            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
-            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+        function updateStep4() {
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = (totalPriceUSD * 0.00003).toFixed(6);
             const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
 
             const flightText = currentLanguage === 'en'
@@ -2731,7 +3247,7 @@
             if (el1) el1.textContent = flightText;
             if (el2) el2.textContent = currentPassengers;
             if (el3) el3.textContent = `${totalWithGas} ETH`;
-    
+            
             // Initialize CAPTCHA for this step
             initializeCaptcha();
         }
@@ -2744,13 +3260,19 @@
             if (event) {
                 event.stopPropagation();
             }
+
+            if (activeProvider && typeof activeProvider.disconnect === 'function') {
+                activeProvider.disconnect();
+            }
+
             walletConnected = false;
             walletAddress = '';
             web3 = null;
-            
+            activeProvider = null;
+
             updateWalletDisplay();
             updatePaymentWalletSection();
-            
+
             console.log('Wallet disconnected');
         }
 
@@ -3029,7 +3551,7 @@
             
             planeMarker.bindPopup(`
                 <div style="font-family: Arial; font-size: 12px;">
-                    <h3 style="margin: 0 0 8px 0; color: #ff6b35;"><i class="fas fa-plane"></i> Flight DIGI-001</h3>
+                    <h3 style="margin: 0 0 8px 0; color: #ff6b35;"><i class="fas fa-plane"></i> Flight AB&T-001</h3>
                     <strong>Missoula → Milan</strong><br>
                     <span style="color: #666; font-size: 11px;">Direct Flight • 11h 30m</span><br>
                     <hr style="margin: 8px 0;">
@@ -3061,7 +3583,7 @@
                         startLng = missoulaLng;
                         endLat = milanLat;
                         endLng = milanLng;
-                        flightNumber = 'DIGI-001';
+                        flightNumber = 'AB&T-001';
                         cityFrom = 'Missoula';
                         cityTo = 'Milan';
                     } else {
@@ -3069,7 +3591,7 @@
                         startLng = milanLng;
                         endLat = missoulaLat;
                         endLng = missoulaLng;
-                        flightNumber = 'DIGI-002';
+                        flightNumber = 'AB&T-002';
                         cityFrom = 'Milan';
                         cityTo = 'Missoula';
                     }
@@ -3280,8 +3802,7 @@
                 return;
             }
 
-            // 30% heavily discounted price
-            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
             const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
             const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
 
@@ -3294,7 +3815,7 @@
             console.log('  ETH Price (before gas):', ethPrice);
             console.log('  Gas Fee:', GAS_FEE);
             console.log('  Total with Gas (ETH):', totalWithGas);
-            console.log('  Type of ethPrice:', typeof ethPrice);
+            console.log('  Type of totalWithGas:', typeof totalWithGas);
 
             // Validate the amount is reasonable (< 10 ETH)
             if (parseFloat(totalWithGas) > 10) {
@@ -3308,31 +3829,30 @@
 
             try {
                 showPaymentLoader();
-        
+                
                 console.log('Sending transaction...');
-                // Send only the ETH ticket price, not including gas
-                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, ethPrice);
-        
+                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, totalWithGas);
+                
                 console.log('Transaction confirmed:', txHash);
-        
+                
                 const successMsg = currentLanguage === 'en'
-                    ? 'Booking confirmed! Flight: ' + currentRoute.from.en + ' → ' + currentRoute.to.en + ' | Passengers: ' + currentPassengers + ' | Amount: ' + ethPrice + ' ETH | TX: ' + txHash
-                    : 'Prenotazione confermata! Volo: ' + currentRoute.from.it + ' → ' + currentRoute.to.it + ' | Passeggeri: ' + currentPassengers + ' | Importo: ' + ethPrice + ' ETH | TX: ' + txHash;
-        
+                    ? 'Booking confirmed! Flight: ' + currentRoute.from.en + ' → ' + currentRoute.to.en + ' | Passengers: ' + currentPassengers + ' | Amount: ' + totalWithGas + ' ETH | TX: ' + txHash
+                    : 'Prenotazione confermata! Volo: ' + currentRoute.from.it + ' → ' + currentRoute.to.it + ' | Passeggeri: ' + currentPassengers + ' | Importo: ' + totalWithGas + ' ETH | TX: ' + txHash;
+                
                 hidePaymentLoader();
                 showNotification(successMsg, 'success', currentLanguage === 'en' ? 'Booking Confirmed' : 'Prenotazione Confermata');
                 closePaymentModal();
-        
+                
                 // Reset search form
                 document.getElementById('from-airport').value = '';
                 document.getElementById('to-airport').value = '';
                 document.getElementById('departure-date').value = '';
                 document.getElementById('passengers').value = '1';
-        
+                
             } catch (error) {
                 hidePaymentLoader();
                 console.error('Payment failed:', error);
-        
+                
                 const msg = currentLanguage === 'en' 
                     ? 'Payment failed: ' + error.message
                     : 'Pagamento fallito: ' + error.message;
