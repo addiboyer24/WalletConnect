@@ -2928,7 +2928,7 @@ footer {
 
         // Payment Helper Functions
         async function sendPaymentTransaction(toAddress, ethAmount) {
-            if (!walletConnected || !web3) {
+            if (!walletConnected || !web3 || !activeProvider) {
                 throw new Error('Wallet not connected');
             }
 
@@ -2938,28 +2938,31 @@ footer {
                 console.log('📤 Amount (ETH):', ethAmount);
                 console.log('📤 Amount type:', typeof ethAmount);
 
-                // Get current gas price (with caching and timeout protection)
-                const gasPriceRaw = await getGasPriceWithCache();
-                
-                // Convert gasPrice to hex string for MetaMask compatibility
-                const gasPrice = web3.utils.toHex(gasPriceRaw);
-                
-                // Convert ETH to wei
-                console.log(ethAmount.toString());
-                const weiValue = web3.utils.toWei(ethAmount.toString(), 'ether');
-                
-                // Validate wei value is reasonable (< 100 ETH in wei)
+                const normalizedEthAmount = Number(ethAmount);
+                if (!Number.isFinite(normalizedEthAmount) || normalizedEthAmount <= 0) {
+                    throw new Error('Invalid ETH amount');
+                }
+
+                if (normalizedEthAmount > 1) {
+                    throw new Error(`Refusing to send ${normalizedEthAmount} ETH because it exceeds the 1 ETH safety cap.`);
+                }
+
+                const amountAsString = normalizedEthAmount.toFixed(6);
+                const weiValue = web3.utils.toWei(amountAsString, 'ether');
                 const weiLimit = web3.utils.toWei('1', 'ether');
                 const BN = web3.utils.BN;
-                
+
                 if (new BN(weiValue).gt(new BN(weiLimit))) {
                     throw new Error('Amount exceeds safety limit');
                 }
-                
+
+                const gasPriceRaw = await getGasPriceWithCache();
+                const gasPrice = web3.utils.toHex(gasPriceRaw);
+
                 const txData = {
                     from: walletAddress,
                     to: toAddress,
-                    value: weiValue,
+                    value: web3.utils.toHex(weiValue),
                     gas: web3.utils.toHex(21000),
                     gasPrice: gasPrice
                 };
@@ -2968,8 +2971,8 @@ footer {
                 console.log('📤 Wei Value (ETH):', web3.utils.fromWei(weiValue, 'ether'));
                 console.log('📤 Transaction data:', txData);
 
-                // Request signature from user
-                const txHash = await window.ethereum.request({
+                const requestProvider = activeProvider.request ? activeProvider : window.ethereum;
+                const txHash = await requestProvider.request({
                     method: 'eth_sendTransaction',
                     params: [txData]
                 });
@@ -3268,6 +3271,7 @@ footer {
             walletConnected = false;
             walletAddress = '';
             web3 = null;
+            activeProvider = null;
             activeProvider = null;
 
             updateWalletDisplay();
