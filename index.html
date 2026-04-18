@@ -66,41 +66,55 @@
 <body>
     <div class="container">
         <h1>Connect Your Wallet</h1>
-        <strong data-en="💰 Crypto Only!" data-it="💰 Solo Cripto!">💰 Crypto Only!</strong>
-        <p data-en="We now accept cryptocurrency payments exclusively. Connect your wallet to book flights." data-it="Ora accettiamo pagamenti in criptovaluta esclusivamente. Connetti il tuo portafoglio per prenotare i voli.">We now accept cryptocurrency payments exclusively. Connect your wallet to book flights.</p>
-        <!-- WalletConnect Deep Link/QR for Mobile -->
-        <div style="margin-top:1.5rem;">
-            <a class="desktop-link btn btn-secondary" href="https://walletconnect.com/" target="_blank" style="margin-bottom:0.5rem;">Connect with WalletConnect (Desktop)</a>
-            <a class="mobile-link btn btn-primary" href="wc://deep-link-example" style="font-size:1.1rem; color:#1976d2; margin-bottom:0.5rem;">Open in Wallet App (Mobile)</a>
-            <canvas id="qr" class="qr" style="margin:0.5rem auto; display:none;"></canvas>
-            <p class="mobile-link" style="font-size:0.95rem; margin:0.5rem 0 0 0;">Scan this QR code with your wallet app:</p>
-        </div>
+        <strong>💰 Crypto Only!</strong>
+        <p>We now accept cryptocurrency payments exclusively. Connect your wallet to book flights.</p>
+        <button id="connect-wallet-btn" style="margin-top:1.5rem; padding:1rem 2rem; font-size:1.1rem; background:#1976d2; color:#fff; border:none; border-radius:8px; cursor:pointer;">Connect Wallet</button>
+        <div id="wallet-status" style="margin-top:1rem; font-size:1rem;"></div>
 
         <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script>
-        // WalletConnect QR/Deep Link for Mobile
-        function isMobileWalletView() {
-            return window.innerWidth <= 600;
-        }
-        function showWalletConnectQR() {
-            var qrCanvas = document.getElementById('qr');
-            if (!qrCanvas) return;
-            if (isMobileWalletView()) {
-                qrCanvas.style.display = 'block';
-                new QRious({
-                    element: qrCanvas,
-                    value: 'wc://deep-link-example',
-                    size: 200
-                });
+        let web3;
+        let provider;
+        let walletAddress = null;
+
+        async function connectWallet() {
+            const statusDiv = document.getElementById('wallet-status');
+            statusDiv.textContent = '';
+            // Try MetaMask first
+            if (window.ethereum) {
+                try {
+                    provider = window.ethereum;
+                    await provider.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(provider);
+                    const accounts = await web3.eth.getAccounts();
+                    walletAddress = accounts[0];
+                    statusDiv.textContent = 'Connected: ' + walletAddress;
+                } catch (err) {
+                    statusDiv.textContent = 'MetaMask connection failed: ' + err.message;
+                }
             } else {
-                qrCanvas.style.display = 'none';
+                // Fallback to WalletConnect
+                try {
+                    provider = new window.WalletConnectProvider.default({
+                        infuraId: '8043bb2cf316cb6b519b6724a4ce1d86'
+                    });
+                    await provider.enable();
+                    web3 = new Web3(provider);
+                    const accounts = await web3.eth.getAccounts();
+                    walletAddress = accounts[0];
+                    statusDiv.textContent = 'Connected (WalletConnect): ' + walletAddress;
+                } catch (err) {
+                    statusDiv.textContent = 'WalletConnect failed: ' + err.message;
+                }
             }
         }
-        window.addEventListener('DOMContentLoaded', showWalletConnectQR);
-        window.addEventListener('resize', showWalletConnectQR);
 
-        // Wallet State with WalletConnect
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('connect-wallet-btn').addEventListener('click', connectWallet);
+        });
         function isMobile() {
             return window.innerWidth <= 600;
         }
