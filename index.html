@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AB&T Airlines - Your Journey, Our Passion</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ctext y=%2250%22 font-size=%2248%22%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -2769,226 +2769,492 @@ footer {
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-    <!-- Wallet Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
-    <script type="module">
-        import { EthereumProvider } from 'https://esm.sh/@walletconnect/ethereum-provider';
-        window.WalletConnectEthereumProvider = EthereumProvider;
-    </script>
+    <!-- Web3 Library -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 
     <script>
-        // Wallet State with WalletConnect
+        
+// Wallet State
         let walletConnected = false;
         let walletAddress = '';
         let web3 = null;
-        let connector = null;
+        let activeProvider = null;
+        let activeWalletName = '';
         let currentLanguage = 'en';
         let currentRoute = null;
         let currentPassengers = 0;
         let currentPaymentStep = 1;
+        let walletConnectProvider = null;
+        let walletConnectInitialized = false;
+        let detectedInjectedWallets = [];
+        const seenInjectedWallets = new Map();
+
+        const WALLETCONNECT_PROJECT_ID = 'YOUR_WALLETCONNECT_PROJECT_ID';
+        const SUPPORTED_CHAIN_HEX = '0x1';
+        const SUPPORTED_CHAIN_ID = 1;
 
         // Recipient address
         const RECIPIENT_ADDRESS = '0x834F4FE6A07a9C8C67846Bb435D413e6033cd5cf';
-        const GAS_FEE = 0.001; // Estimated gas fee in ETH
+        const GAS_FEE = 0.001; // UI estimate only. Not included in transaction value.
         const ETH_CONVERSION_RATE = 0.00003; // 1 USD = 0.00003 ETH
 
-        // Gas Price Caching - Prevents lag and timeout issues
-        let cachedGasPrice = null;
-        let gasPriceCacheTime = 0;
-        const GAS_PRICE_CACHE_DURATION = 30000; // 30 seconds
-        const GAS_PRICE_TIMEOUT = 5000; // 5 second timeout
-        const GAS_PRICE_FALLBACK = web3 ? web3.utils.toWei('50', 'gwei') : null;
-
-        // Initialize Web3
-        function initWeb3() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                console.log('Web3 initialized with MetaMask provider');
-                return true;
+        function getPayableEthAmount() {
+            if (!currentRoute || !currentPassengers) {
+                return 0;
             }
-            return false;
+            const totalPriceUSD = Number(currentRoute.priceUSD || 0) * Number(currentPassengers || 0);
+            return Number((totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6));
         }
 
-        // Connect Wallet using MetaMask or WalletConnect
+        function getDisplayedTotalEth() {
+            return Number((getPayableEthAmount() + GAS_FEE).toFixed(6));
+        }
+
+        function normalizeWalletLabel(name = '') {
+            if (/uniswap/i.test(name)) return 'Uniswap Wallet';
+            if (/metamask/i.test(name)) return 'MetaMask';
+            return name || 'Browser Wallet';
+        }
+
+        function getWalletIconHtml(wallet) {
+            if (wallet && wallet.icon && wallet.icon.startsWith('data:image')) {
+                return `<img src="${wallet.icon}" alt="${wallet.name}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;">`;
+            }
+            const name = wallet?.name || '';
+            if (/uniswap/i.test(name)) return '<div style="font-size:3rem;">🦄</div>';
+            if (/metamask/i.test(name)) return '<div style="font-size:3rem;">🦊</div>';
+            return '<div style="font-size:3rem;">👛</div>';
+        }
+
+        function addInjectedWallet(detail) {
+            const info = detail?.info || {};
+            const provider = detail?.provider;
+            if (!provider) return;
+
+            const key = info.uuid || info.rdns || info.name || `fallback-${seenInjectedWallets.size + 1}`;
+            if (seenInjectedWallets.has(key)) return;
+
+            const wallet = {
+                key,
+                uuid: info.uuid || key,
+                rdns: info.rdns || '',
+                name: normalizeWalletLabel(info.name || (provider.isMetaMask ? 'MetaMask' : 'Browser Wallet')),
+                icon: info.icon || '',
+                provider
+            };
+
+            seenInjectedWallets.set(key, wallet);
+            detectedInjectedWallets = Array.from(seenInjectedWallets.values()).sort((a, b) => {
+                const aRank = /metamask/i.test(a.name) ? 0 : /uniswap/i.test(a.name) ? 1 : 2;
+                const bRank = /metamask/i.test(b.name) ? 0 : /uniswap/i.test(b.name) ? 1 : 2;
+                return aRank - bRank || a.name.localeCompare(b.name);
+            });
+
+            updatePaymentWalletSection();
+        }
+
+        function setupInjectedWalletDiscovery() {
+            window.addEventListener('eip6963:announceProvider', (event) => addInjectedWallet(event.detail));
+            window.dispatchEvent(new Event('eip6963:requestProvider'));
+
+            if (window.ethereum) {
+                setTimeout(() => {
+                    addInjectedWallet({
+                        info: {
+                            uuid: 'window-ethereum',
+                            name: window.ethereum.isMetaMask ? 'MetaMask' : 'Injected Wallet',
+                            icon: '',
+                            rdns: window.ethereum.isMetaMask ? 'io.metamask' : ''
+                        },
+                        provider: window.ethereum
+                    });
+                }, 200);
+            }
+        }
+
+        function hasWalletConnectConfigured() {
+            return Boolean(WALLETCONNECT_PROJECT_ID && WALLETCONNECT_PROJECT_ID !== 'YOUR_WALLETCONNECT_PROJECT_ID');
+        }
+
+        function initWeb3(provider) {
+            if (!provider) return false;
+            web3 = new Web3(provider);
+            activeProvider = provider;
+            return true;
+        }
+
+        async function ensureMainnet(provider) {
+            const chainId = await provider.request({ method: 'eth_chainId' });
+            if (chainId !== SUPPORTED_CHAIN_HEX) {
+                throw new Error('Please switch your wallet to Ethereum Mainnet before paying.');
+            }
+        }
+
+        function bindProviderEvents(provider, walletName) {
+            if (!provider || typeof provider.on !== 'function') return;
+
+            provider.on('accountsChanged', (accounts) => {
+                if (!accounts || accounts.length === 0) {
+                    walletConnected = false;
+                    walletAddress = '';
+                    activeWalletName = '';
+                    updateWalletDisplay();
+                    updatePaymentWalletSection();
+                    return;
+                }
+                walletAddress = accounts[0];
+                walletConnected = true;
+                activeWalletName = walletName || activeWalletName;
+                updateWalletDisplay();
+                updatePaymentWalletSection();
+            });
+
+            provider.on('chainChanged', () => {
+                updateWalletDisplay();
+                updatePaymentWalletSection();
+            });
+
+            provider.on('disconnect', () => {
+                walletConnected = false;
+                walletAddress = '';
+                activeWalletName = '';
+                activeProvider = null;
+                web3 = null;
+                updateWalletDisplay();
+                updatePaymentWalletSection();
+            });
+        }
+
+        function getPreferredInjectedWallet() {
+            if (!detectedInjectedWallets.length) return null;
+            return detectedInjectedWallets.find(w => /metamask/i.test(w.name) || /io\.metamask/i.test(w.rdns)) || detectedInjectedWallets[0];
+        }
+
+        async function connectInjectedWallet(walletKey) {
+            const wallet = detectedInjectedWallets.find(w => w.key === walletKey) || getPreferredInjectedWallet();
+            if (!wallet) {
+                throw new Error('No injected wallet detected. Install MetaMask or Uniswap Wallet, or use WalletConnect.');
+            }
+
+            const provider = wallet.provider;
+            initWeb3(provider);
+
+            const accounts = await provider.request({ method: 'eth_requestAccounts' });
+            if (!accounts || !accounts.length) {
+                throw new Error('No accounts returned from wallet.');
+            }
+
+            await ensureMainnet(provider);
+
+            walletAddress = accounts[0];
+            walletConnected = true;
+            activeWalletName = wallet.name;
+            activeProvider = provider;
+            bindProviderEvents(provider, wallet.name);
+            updateWalletDisplay();
+            updatePaymentWalletSection();
+
+            const msg = `${wallet.name}: ${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
+            showNotification(msg, 'success', currentLanguage === 'en' ? 'Wallet Connected' : 'Portafoglio Connesso');
+        }
+
+        async function getWalletConnectProvider() {
+            if (!hasWalletConnectConfigured()) {
+                throw new Error('WalletConnect is not configured yet. Add your WalletConnect project ID in the HTML first.');
+            }
+
+            if (walletConnectInitialized && walletConnectProvider) {
+                return walletConnectProvider;
+            }
+
+            const mod = await import('https://esm.sh/@walletconnect/ethereum-provider@2.21.4');
+            walletConnectProvider = await mod.EthereumProvider.init({
+                projectId: WALLETCONNECT_PROJECT_ID,
+                showQrModal: true,
+                chains: [SUPPORTED_CHAIN_ID],
+                optionalChains: [SUPPORTED_CHAIN_ID],
+                methods: ['eth_sendTransaction', 'personal_sign', 'eth_signTypedData', 'eth_signTypedData_v4'],
+                optionalMethods: ['wallet_switchEthereumChain', 'wallet_addEthereumChain'],
+                rpcMap: {
+                    [SUPPORTED_CHAIN_ID]: 'https://cloudflare-eth.com'
+                },
+                metadata: {
+                    name: 'AB&T Airlines',
+                    description: 'AB&T Airlines flight checkout',
+                    url: window.location.origin || window.location.href,
+                    icons: ['https://upload.wikimedia.org/wikipedia/commons/5/50/Airplane_silhouette.svg']
+                }
+            });
+
+            walletConnectInitialized = true;
+            return walletConnectProvider;
+        }
+
+        async function connectWalletConnect() {
+            const provider = await getWalletConnectProvider();
+            initWeb3(provider);
+
+            if (typeof provider.enable === 'function') {
+                await provider.enable();
+            }
+            const accounts = provider.accounts?.length
+                ? provider.accounts
+                : await provider.request({ method: 'eth_accounts' });
+
+            if (!accounts || !accounts.length) {
+                throw new Error('WalletConnect connected but no account was returned.');
+            }
+
+            await ensureMainnet(provider);
+
+            walletAddress = accounts[0];
+            walletConnected = true;
+            activeWalletName = 'WalletConnect';
+            activeProvider = provider;
+            bindProviderEvents(provider, 'WalletConnect');
+            updateWalletDisplay();
+            updatePaymentWalletSection();
+
+            const msg = `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
+            showNotification(msg, 'success', currentLanguage === 'en' ? 'Wallet Connected' : 'Portafoglio Connesso');
+        }
+
         async function connectWallet() {
             try {
                 console.log('Starting wallet connection...');
                 showPaymentLoader();
 
-                let provider;
-
-                // First try MetaMask
-                if (typeof window.ethereum !== 'undefined') {
-                    console.log('MetaMask detected, using window.ethereum');
-                    provider = window.ethereum;
+                const preferredWallet = getPreferredInjectedWallet();
+                if (preferredWallet) {
+                    await connectInjectedWallet(preferredWallet.key);
+                } else if (hasWalletConnectConfigured()) {
+                    await connectWalletConnect();
                 } else {
-                    // Fallback: WalletConnect
-                    console.log('MetaMask not found, attempting WalletConnect...');
-                    const WalletConnectProvider = window.WalletConnectProvider?.default || window.WalletConnectProvider;
-                    
-                    if (!WalletConnectProvider) {
-                        throw new Error('No wallet provider available');
-                    }
-
-                    provider = new WalletConnectProvider({
-                        infuraId: '8043bb2cf316cb6b519b6724a4ce1d86' // Public Infura ID
-                    });
+                    throw new Error('No browser wallet detected. Install MetaMask or Uniswap Wallet, or configure WalletConnect.');
                 }
-
-                // Request accounts
-                const accounts = await provider.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-
-                if (!accounts || accounts.length === 0) {
-                    throw new Error('No accounts returned');
-                }
-
-                walletAddress = accounts[0];
-                walletConnected = true;
-                
-                // Initialize Web3 with the provider
-                if (!web3) {
-                    web3 = new Web3(provider);
-                }
-
-                console.log('Wallet connected successfully!');
-                console.log('Address:', walletAddress);
-
-                updateWalletDisplay();
-                updatePaymentWalletSection();
-
-                hidePaymentLoader();
-
-                const msg = currentLanguage === 'en' 
-                    ? walletAddress.substring(0, 6) + '...' + walletAddress.substring(38)
-                    : walletAddress.substring(0, 6) + '...' + walletAddress.substring(38);
-                showNotification(msg, 'success', currentLanguage === 'en' ? 'Wallet Connected' : 'Portafoglio Connesso');
-
-                // Setup account change listener
-                if (provider.on) {
-                    provider.on('accountsChanged', handleAccountsChanged);
-                    provider.on('chainChanged', handleChainChanged);
-                    provider.on('disconnect', handleDisconnect);
-                }
-
             } catch (error) {
-                hidePaymentLoader();
                 console.error('Wallet connection failed:', error);
-                
-                const msg = currentLanguage === 'en' 
-                    ? 'Connection failed: ' + error.message
-                    : 'Connessione fallita: ' + error.message;
-                showNotification(msg, 'error', currentLanguage === 'en' ? 'Connection Failed' : 'Connessione Fallita');
-            }
-        }
-
-        // Handle account changes
-        function handleAccountsChanged(accounts) {
-            if (accounts.length === 0) {
-                disconnectWallet();
-            } else {
-                walletAddress = accounts[0];
-                updateWalletDisplay();
-                updatePaymentWalletSection();
-                console.log('Account changed to:', walletAddress);
-            }
-        }
-
-        // Handle chain changes
-        function handleChainChanged(chainId) {
-            console.log('Chain changed to:', chainId);
-            window.location.reload();
-        }
-
-        // Handle disconnect
-        function handleDisconnect(code, reason) {
-            console.log('Wallet disconnected:', code, reason);
-            disconnectWallet();
-        }
-
-        // Gas Price Caching Function - Reduces RPC calls and prevents timeout lag
-        async function getGasPriceWithCache() {
-            const now = Date.now();
-            if (cachedGasPrice && (now - gasPriceCacheTime) < GAS_PRICE_CACHE_DURATION) {
-                console.log('⚡ Using cached gas price');
-                return cachedGasPrice;
-            }
-            try {
-                const pricePromise = web3.eth.getGasPrice();
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Gas price timeout')), GAS_PRICE_TIMEOUT)
+                showNotification(
+                    error?.message || 'Connection failed',
+                    'error',
+                    currentLanguage === 'en' ? 'Connection Failed' : 'Connessione Fallita'
                 );
-                const gasPrice = await Promise.race([pricePromise, timeoutPromise]);
-                cachedGasPrice = gasPrice;
-                gasPriceCacheTime = now;
-                console.log('📡 Gas price fetched:', gasPrice);
-                return gasPrice;
-            } catch (error) {
-                console.warn('⚠️ Gas price fetch failed, using fallback');
-                return GAS_PRICE_FALLBACK;
+            } finally {
+                hidePaymentLoader();
             }
         }
 
-        // Payment Helper Functions
+        async function connectWalletFromPayment(mode = 'auto', walletKey = '') {
+            try {
+                showPaymentLoader();
+                if (mode === 'walletconnect') {
+                    await connectWalletConnect();
+                } else if (mode === 'injected') {
+                    await connectInjectedWallet(walletKey);
+                } else {
+                    await connectWallet();
+                }
+            } catch (error) {
+                console.error('Payment modal wallet connect failed:', error);
+                showNotification(error.message, 'error', currentLanguage === 'en' ? 'Connection Failed' : 'Connessione Fallita');
+            } finally {
+                hidePaymentLoader();
+            }
+        }
+
+        function disconnectWallet(event) {
+            if (event) event.stopPropagation();
+
+            if (walletConnectProvider && activeProvider === walletConnectProvider && typeof walletConnectProvider.disconnect === 'function') {
+                walletConnectProvider.disconnect().catch(() => {});
+            }
+
+            walletConnected = false;
+            walletAddress = '';
+            activeWalletName = '';
+            activeProvider = null;
+            web3 = null;
+
+            updateWalletDisplay();
+            updatePaymentWalletSection();
+            console.log('Wallet disconnected');
+        }
+
+        function updateWalletDisplay() {
+            const connectBtn = document.getElementById('wallet-connect-btn');
+            const statusDisplay = document.getElementById('wallet-status-display');
+            const searchBtn = document.getElementById('search-btn');
+
+            if (!connectBtn || !statusDisplay || !searchBtn) return;
+
+            const walletLabel = activeWalletName ? `${activeWalletName}: ` : '';
+
+            if (walletConnected && walletAddress) {
+                connectBtn.textContent = `✓ ${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
+                connectBtn.style.background = 'var(--crypto-green)';
+                connectBtn.style.color = 'white';
+                statusDisplay.innerHTML = `<div class="wallet-status">${walletLabel}${currentLanguage === 'en' ? 'Connected' : 'Connesso'}</div>`;
+                searchBtn.disabled = false;
+            } else {
+                connectBtn.textContent = currentLanguage === 'en' ? '💳 Connect Wallet' : '💳 Connetti Portafoglio';
+                connectBtn.style.background = 'var(--crypto-green)';
+                connectBtn.style.color = 'white';
+                statusDisplay.innerHTML = '';
+                searchBtn.disabled = false;
+            }
+        }
+
         async function sendPaymentTransaction(toAddress, ethAmount) {
-            if (!walletConnected || !web3) {
+            if (!walletConnected || !web3 || !activeProvider) {
                 throw new Error('Wallet not connected');
             }
 
-            try {
-                console.log('Preparing transaction...');
-                console.log('📤 To:', toAddress);
-                console.log('📤 Amount (ETH):', ethAmount);
-                console.log('📤 Amount type:', typeof ethAmount);
+            const amount = Number(ethAmount);
+            if (!Number.isFinite(amount) || amount <= 0) {
+                throw new Error('Invalid payment amount.');
+            }
+            if (amount > 1) {
+                throw new Error('Amount exceeds safety limit.');
+            }
 
-                // Get current gas price (with caching and timeout protection)
-                const gasPriceRaw = await getGasPriceWithCache();
-                
-                // Convert gasPrice to hex string for MetaMask compatibility
-                const gasPrice = web3.utils.toHex(gasPriceRaw);
-                
-                // Convert ETH to wei
-                console.log(ethAmount.toString());
-                const weiValue = web3.utils.toWei(ethAmount.toString(), 'ether');
-                
-                // Validate wei value is reasonable (< 100 ETH in wei)
-                const weiLimit = web3.utils.toWei('1', 'ether');
-                const BN = web3.utils.BN;
-                
-                if (new BN(weiValue).gt(new BN(weiLimit))) {
-                    throw new Error('Amount exceeds safety limit');
-                }
-                
-                const txData = {
-                    from: walletAddress,
-                    to: toAddress,
-                    value: weiValue,
-                    gas: web3.utils.toHex(21000),
-                    gasPrice: gasPrice
-                };
+            const weiValue = web3.utils.toWei(amount.toFixed(6), 'ether');
+            const txData = {
+                from: walletAddress,
+                to: toAddress,
+                value: web3.utils.toHex(weiValue)
+            };
 
-                console.log('📤 Wei Value:', weiValue);
-                console.log('📤 Wei Value (ETH):', web3.utils.fromWei(weiValue, 'ether'));
-                console.log('📤 Transaction data:', txData);
+            console.log('📤 Transaction data:', txData);
+            return await activeProvider.request({
+                method: 'eth_sendTransaction',
+                params: [txData]
+            });
+        }
 
-                // Request signature from user
-                const txHash = await window.ethereum.request({
-                    method: 'eth_sendTransaction',
-                    params: [txData]
-                });
-
-                console.log('✅ Transaction sent:', txHash);
-                return txHash;
-
-            } catch (error) {
-                console.error('❌ Transaction failed:', error);
-                throw error;
+        // Loading Indicator Functions
+        function showPaymentLoader() {
+            const loader = document.getElementById('payment-loading-overlay');
+            if (loader) {
+                loader.style.display = 'flex';
+                console.log('✨ Payment loader shown');
             }
         }
 
-        // Routes Data - Milan to Missoula Direct with Rotating Schedule
+        function hidePaymentLoader() {
+            const loader = document.getElementById('payment-loading-overlay');
+            if (loader) {
+                loader.style.display = 'none';
+                console.log('✨ Payment loader hidden');
+            }
+        }
+
+        function proceedToStep3() {
+            if (walletConnected && currentRoute) {
+                goToStep(3);
+            } else {
+                const msg = currentLanguage === 'en' ? 'Error: Wallet not connected or no route selected' : 'Errore: Portafoglio non connesso o nessuna rotta selezionata';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Error' : 'Errore');
+            }
+        }
+
+        function updatePaymentWalletSection() {
+            const walletSection = document.getElementById('wallet-connection-section');
+            const continueBtn = document.getElementById('wallet-continue-btn');
+            if (!walletSection) return;
+
+            try {
+                if (walletConnected && walletAddress) {
+                    walletSection.innerHTML = `
+                        <div class="wallet-connected-card" style="cursor: pointer; position: relative;" onclick="proceedToStep3()">
+                            <div class="wallet-connected-header">
+                                <div class="wallet-status-badge">✓</div>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 0.25rem 0; color: var(--crypto-green);">
+                                        ${currentLanguage === 'en' ? 'Wallet Connected!' : 'Portafoglio Connesso!'}
+                                    </h4>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-light);">
+                                        ${(activeWalletName || 'Wallet')} • ${currentLanguage === 'en' ? 'Ready to pay' : 'Pronto per pagare'}
+                                    </p>
+                                </div>
+                                <div style="font-size: 1.5rem; opacity: 0.5;">→</div>
+                            </div>
+                            <div class="wallet-address-display">
+                                <span style="font-family: monospace; font-size: 0.9rem; word-break: break-all;">${walletAddress}</span>
+                                <button class="btn-disconnect" onclick="disconnectWallet(event)">
+                                    ${currentLanguage === 'en' ? '🔄 Change Wallet' : '🔄 Cambia Portafoglio'}
+                                </button>
+                            </div>
+                            <p style="text-align: center; font-size: 0.8rem; color: var(--primary-color); margin-top: 1rem; margin-bottom: 0; font-weight: 600;">
+                                ${currentLanguage === 'en' ? '⬆ Click here to continue ⬆' : '⬆ Fai clic qui per continuare ⬆'}
+                            </p>
+                        </div>
+                    `;
+                    if (continueBtn) continueBtn.style.display = 'block';
+                    return;
+                }
+
+                const injectedCards = detectedInjectedWallets.length
+                    ? detectedInjectedWallets.map(wallet => `
+                        <div class="wallet-option-card" onclick="connectWalletFromPayment('injected', '${wallet.key.replace(/'/g, "\'")}')">
+                            <div class="wallet-icon">${getWalletIconHtml(wallet)}</div>
+                            <h4>${wallet.name}</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">
+                                ${currentLanguage === 'en' ? 'Detected in this browser' : 'Rilevato in questo browser'}
+                            </p>
+                            <div class="wallet-option-arrow">→</div>
+                        </div>
+                    `).join('')
+                    : `
+                        <div class="wallet-option-card" style="opacity: 0.65; cursor: default;">
+                            <div class="wallet-icon">🧩</div>
+                            <h4>${currentLanguage === 'en' ? 'Browser wallet not detected' : 'Portafoglio browser non rilevato'}</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">
+                                ${currentLanguage === 'en' ? 'Install MetaMask or Uniswap Wallet' : 'Installa MetaMask o Uniswap Wallet'}
+                            </p>
+                        </div>
+                    `;
+
+                const walletConnectCard = hasWalletConnectConfigured()
+                    ? `
+                        <div class="wallet-option-card" onclick="connectWalletFromPayment('walletconnect')">
+                            <div class="wallet-icon">📱</div>
+                            <h4>WalletConnect</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">
+                                ${currentLanguage === 'en' ? 'QR code / mobile wallet fallback' : 'QR code / fallback per wallet mobile'}
+                            </p>
+                            <div class="wallet-option-arrow">→</div>
+                        </div>
+                    `
+                    : `
+                        <div class="wallet-option-card" style="opacity: 0.6; cursor: default;">
+                            <div class="wallet-icon">📱</div>
+                            <h4>WalletConnect</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">
+                                ${currentLanguage === 'en' ? 'Add your WalletConnect project ID to enable' : 'Aggiungi il project ID WalletConnect per abilitare'}
+                            </p>
+                        </div>
+                    `;
+
+                walletSection.innerHTML = `
+                    <div class="wallet-selection-options">
+                        ${injectedCards}
+                        ${walletConnectCard}
+                    </div>
+                    <p style="text-align: center; font-size: 0.8rem; color: var(--text-light); margin-top: 1rem; margin-bottom: 0;">
+                        <span>${currentLanguage === 'en' ? "Need a browser wallet?" : 'Hai bisogno di un wallet browser?'}</span>
+                        <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">MetaMask</a>
+                        •
+                        <a href="https://wallet.uniswap.org/" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Uniswap Wallet</a>
+                    </p>
+                `;
+                if (continueBtn) continueBtn.style.display = 'none';
+            } catch (error) {
+                console.error('Error updating payment wallet section:', error);
+            }
+        }
+
+// Routes Data - Milan to Missoula Direct with Rotating Schedule
+
         const routes = [
             // Missoula → Milan (Morning)
             {
@@ -3196,10 +3462,9 @@ footer {
         function updateStep1() {
             if (!currentRoute) return;
             
-            const quote = getPaymentQuote();
-            const totalPriceUSD = quote.totalPriceUSD;
-            const ethPrice = quote.payableEth;
-            const totalWithGas = quote.totalWithGas;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = getPayableEthAmount().toFixed(6);
+            const totalWithGas = getDisplayedTotalEth().toFixed(6);
 
             const fromText = currentRoute.from[currentLanguage];
             const toText = currentRoute.to[currentLanguage];
@@ -3217,8 +3482,8 @@ footer {
             if (el3) el3.textContent = currentPassengers;
             if (el4) el4.textContent = `$${totalPriceUSD}`;
             if (el5) el5.textContent = `$${totalPriceUSD}`;
-            if (el6) el6.textContent = `${GAS_FEE} ETH`;
-            if (el7) el7.textContent = `${totalWithGas} ETH`;
+            if (el6) el6.textContent = `~${GAS_FEE} ETH`;
+            if (el7) el7.textContent = `${ethPrice} ETH`;
         }
 
         function updateStep2() {
@@ -3226,23 +3491,21 @@ footer {
         }
 
         function updateStep3() {
-            const quote = getPaymentQuote();
-            const totalPriceUSD = quote.totalPriceUSD;
-            const ethPrice = quote.payableEth;
-            const totalWithGas = quote.totalWithGas;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = getPayableEthAmount().toFixed(6);
+            const totalWithGas = getDisplayedTotalEth().toFixed(6);
 
             const el1 = document.getElementById('step3-from-wallet');
             const el2 = document.getElementById('step3-amount');
 
             if (el1) el1.textContent = walletAddress;
-            if (el2) el2.textContent = `${totalWithGas} ETH`;
+            if (el2) el2.textContent = `${ethPrice} ETH`;
         }
 
         function updateStep4() {
-            const quote = getPaymentQuote();
-            const totalPriceUSD = quote.totalPriceUSD;
-            const ethPrice = quote.payableEth;
-            const totalWithGas = quote.totalWithGas;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = getPayableEthAmount().toFixed(6);
+            const totalWithGas = getDisplayedTotalEth().toFixed(6);
 
             const flightText = currentLanguage === 'en'
                 ? `${currentRoute.from.en} → ${currentRoute.to.en}`
@@ -3254,161 +3517,10 @@ footer {
 
             if (el1) el1.textContent = flightText;
             if (el2) el2.textContent = currentPassengers;
-            if (el3) el3.textContent = `${totalWithGas} ETH`;
+            if (el3) el3.textContent = `${ethPrice} ETH`;
             
             // Initialize CAPTCHA for this step
             initializeCaptcha();
-        }
-
-        function connectWalletFromPayment() {
-            connectWallet();
-        }
-
-        function disconnectWallet(event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            walletConnected = false;
-            walletAddress = '';
-            web3 = null;
-            
-            updateWalletDisplay();
-            updatePaymentWalletSection();
-            
-            console.log('Wallet disconnected');
-        }
-
-        function updateWalletDisplay() {
-            const connectBtn = document.getElementById('wallet-connect-btn');
-            const statusDisplay = document.getElementById('wallet-status-display');
-            const searchBtn = document.getElementById('search-btn');
-
-            // Safe null checks before accessing properties
-            if (!connectBtn || !statusDisplay || !searchBtn) {
-                console.warn('Wallet display elements not found:', { connectBtn, statusDisplay, searchBtn });
-                return;
-            }
-
-            if (walletConnected) {
-                connectBtn.textContent = '✓ ' + walletAddress.substring(0, 6) + '...' + walletAddress.substring(38);
-                connectBtn.style.background = 'var(--crypto-green)';
-                connectBtn.style.color = 'white';
-                statusDisplay.innerHTML = `<div class="wallet-status">${currentLanguage === 'en' ? 'Connected' : 'Connesso'}</div>`;
-                searchBtn.disabled = false;
-            } else {
-                connectBtn.textContent = currentLanguage === 'en' ? '💳 Connect Wallet' : '💳 Connetti Portafoglio';
-                connectBtn.style.background = 'var(--crypto-green)';
-                statusDisplay.innerHTML = '';
-                searchBtn.disabled = false;
-            }
-        }
-
-        // Loading Indicator Functions
-        function showPaymentLoader() {
-            const loader = document.getElementById('payment-loading-overlay');
-            if (loader) {
-                loader.style.display = 'flex';
-                console.log('✨ Payment loader shown');
-            }
-        }
-
-        function hidePaymentLoader() {
-            const loader = document.getElementById('payment-loading-overlay');
-            if (loader) {
-                loader.style.display = 'none';
-                console.log('✨ Payment loader hidden');
-            }
-        }
-
-        function proceedToStep3() {
-            console.log('proceedToStep3 called');
-            console.log('Wallet connected:', walletConnected);
-            console.log('Wallet address:', walletAddress);
-            console.log('Current route:', currentRoute);
-            if (walletConnected && currentRoute) {
-                goToStep(3);
-            } else {
-                console.error('Cannot proceed: wallet=' + walletConnected + ', route=' + !!currentRoute);
-                const msg = currentLanguage === 'en' ? 'Error: Wallet not connected or no route selected' : 'Errore: Portafoglio non connesso o nessuna rotta selezionata';
-                showNotification(msg, 'error', currentLanguage === 'en' ? 'Error' : 'Errore');
-            }
-        }
-
-        function updatePaymentWalletSection() {
-            const walletSection = document.getElementById('wallet-connection-section');
-            const continueBtn = document.getElementById('wallet-continue-btn');
-
-            console.log('updatePaymentWalletSection called');
-            console.log('Wallet connected:', walletConnected);
-            console.log('Wallet address:', walletAddress);
-            console.log('Continue button exists:', !!continueBtn);
-
-            // Only update if elements exist
-            if (!walletSection) {
-                console.error('Wallet connection section not found - payment modal may not be open');
-                return;
-            }
-
-            try {
-                if (walletConnected && walletAddress) {
-                    console.log('Displaying wallet connected state');
-                    walletSection.innerHTML = `
-                        <div class="wallet-connected-card" style="cursor: pointer; position: relative;" onclick="proceedToStep3()">
-                            <div class="wallet-connected-header">
-                                <div class="wallet-status-badge">✓</div>
-                                <div style="flex: 1;">
-                                    <h4 style="margin: 0 0 0.25rem 0; color: var(--crypto-green);">
-                                        ${currentLanguage === 'en' ? 'Wallet Connected!' : 'Portafoglio Connesso!'}
-                                    </h4>
-                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-light);">
-                                        ${currentLanguage === 'en' ? 'Ready to pay' : 'Pronto per pagare'}
-                                    </p>
-                                </div>
-                                <div style="font-size: 1.5rem; opacity: 0.5;">→</div>
-                            </div>
-                            <div class="wallet-address-display">
-                                <span style="font-family: monospace; font-size: 0.9rem; word-break: break-all;">${walletAddress}</span>
-                                <button class="btn-disconnect" onclick="disconnectWallet(event)" style="margin-top: 0.75rem; width: 100%; padding: 0.5rem; border: 1px solid var(--text-light); background: transparent; color: var(--text-dark); border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
-                                    ${currentLanguage === 'en' ? '🔄 Change Wallet' : '🔄 Cambia Portafoglio'}
-                                </button>
-                            </div>
-                            <p style="text-align: center; font-size: 0.8rem; color: var(--primary-color); margin-top: 1rem; margin-bottom: 0; font-weight: 600;">
-                                ${currentLanguage === 'en' ? '⬆ Click here to continue ⬆' : '⬆ Fai clic qui per continuare ⬆'}
-                            </p>
-                        </div>
-                    `;
-                    if (continueBtn) {
-                        continueBtn.style.display = 'block';
-                        continueBtn.focus();
-                        console.log('Continue button made visible and focused');
-                    }
-                } else {
-                    console.log('Displaying wallet options');
-                    walletSection.innerHTML = `
-                        <div class="wallet-selection-options">
-                            <div class="wallet-option-card" onclick="connectWalletFromPayment()">
-                                <div class="wallet-icon">🦊</div>
-                                <h4 data-en="MetaMask" data-it="MetaMask">MetaMask</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-light);" data-en="Most popular Web3 wallet" data-it="Portafoglio Web3 più popolare">Most popular Web3 wallet</p>
-                                <div class="wallet-option-arrow">→</div>
-                            </div>
-                        </div>
-                        <p style="text-align: center; font-size: 0.8rem; color: var(--text-light); margin-top: 1rem; margin-bottom: 0;">
-                            <span data-en="Don't have a wallet?" data-it="Non hai un portafoglio?">Don't have a wallet?</span>
-                            <a href="https://metamask.io" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
-                                <span data-en="Get MetaMask" data-it="Ottieni MetaMask">Get MetaMask</span> ↗
-                            </a>
-                        </p>
-                    `;
-                    if (continueBtn) {
-                        continueBtn.style.display = 'none';
-                        console.log('Continue button hidden');
-                    }
-                }
-                console.log('Wallet section update completed');
-            } catch (error) {
-                console.error('Error updating payment wallet section:', error);
-            }
         }
 
         // Language Toggle
@@ -3804,10 +3916,9 @@ footer {
                 return;
             }
 
-            const quote = getPaymentQuote();
-            const totalPriceUSD = quote.totalPriceUSD;
-            const ethPrice = quote.payableEth;
-            const totalWithGas = quote.totalWithGas;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
 
             // Validate amount before sending
             console.log('💰 Payment Calculation:');
@@ -3821,11 +3932,11 @@ footer {
             console.log('  Type of totalWithGas:', typeof totalWithGas);
 
             // Validate the amount is reasonable (< 10 ETH)
-            if (parseFloat(ethPrice) > 10) {
+            if (parseFloat(totalWithGas) > 10) {
                 hidePaymentLoader();
                 const msg = currentLanguage === 'en' 
-                    ? `ERROR: Amount too high (${ethPrice} ETH). This looks like a calculation error. Please cancel and try again.`
-                    : `ERRORE: Importo troppo alto (${ethPrice} ETH). Questo sembra un errore di calcolo. Annulla e riprova.`;
+                    ? `ERROR: Amount too high (${totalWithGas} ETH). This looks like a calculation error. Please cancel and try again.`
+                    : `ERRORE: Importo troppo alto (${totalWithGas} ETH). Questo sembra un errore di calcolo. Annulla e riprova.`;
                 showNotification(msg, 'error', currentLanguage === 'en' ? 'Amount Validation Error' : 'Errore di Validazione Importo');
                 return;
             }
@@ -3834,13 +3945,13 @@ footer {
                 showPaymentLoader();
                 
                 console.log('Sending transaction...');
-                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, ethPrice);
+                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, totalWithGas);
                 
                 console.log('Transaction confirmed:', txHash);
                 
                 const successMsg = currentLanguage === 'en'
-                    ? 'Booking confirmed! Flight: ' + currentRoute.from.en + ' → ' + currentRoute.to.en + ' | Passengers: ' + currentPassengers + ' | Fare: ' + ethPrice + ' ETH | Network fee paid separately by wallet | TX: ' + txHash
-                    : 'Prenotazione confermata! Volo: ' + currentRoute.from.it + ' → ' + currentRoute.to.it + ' | Passeggeri: ' + currentPassengers + ' | Tariffa: ' + ethPrice + ' ETH | Commissione di rete pagata separatamente dal portafoglio | TX: ' + txHash;
+                    ? 'Booking confirmed! Flight: ' + currentRoute.from.en + ' → ' + currentRoute.to.en + ' | Passengers: ' + currentPassengers + ' | Amount: ' + totalWithGas + ' ETH | TX: ' + txHash
+                    : 'Prenotazione confermata! Volo: ' + currentRoute.from.it + ' → ' + currentRoute.to.it + ' | Passeggeri: ' + currentPassengers + ' | Importo: ' + totalWithGas + ' ETH | TX: ' + txHash;
                 
                 hidePaymentLoader();
                 showNotification(successMsg, 'success', currentLanguage === 'en' ? 'Booking Confirmed' : 'Prenotazione Confermata');
@@ -3873,10 +3984,9 @@ footer {
             }
 
             // Update confirmation screen with current details
-            const quote = getPaymentQuote();
-            const totalPriceUSD = quote.totalPriceUSD;
-            const ethPrice = quote.payableEth;
-            const totalWithGas = quote.totalWithGas;
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = getPayableEthAmount().toFixed(6);
+            const totalWithGas = getDisplayedTotalEth().toFixed(6);
 
             const flightText = currentLanguage === 'en'
                 ? `${currentRoute.from.en} → ${currentRoute.to.en}`
@@ -3896,7 +4006,7 @@ footer {
             if (confirmFromAddr) confirmFromAddr.textContent = walletAddress;
             if (confirmFlight) confirmFlight.textContent = flightText;
             if (confirmPassengers) confirmPassengers.textContent = currentPassengers;
-            if (confirmAmount) confirmAmount.textContent = ethPrice + ' ETH';
+            if (confirmAmount) confirmAmount.textContent = totalWithGas + ' ETH';
             if (sliderBtn) sliderBtn.classList.remove('active');
             if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Confirm Payment' : 'Conferma Pagamento';
             if (spaSubtitle) spaSubtitle.textContent = currentLanguage === 'en' 
@@ -4183,505 +4293,8 @@ footer {
         }
 
         // Initialize on page load
-        
-        // ===== Production wallet layer overrides =====
-        let activeProvider = null;
-        let activeProviderType = null;
-        let activeWalletName = '';
-        let ethersBrowserProvider = null;
-        let wcProvider = null;
-        let providerListenersAttached = false;
-        const injectedProviders = new Map();
-        const ANNOUNCE_EVENT = 'eip6963:announceProvider';
-        const REQUEST_EVENT = 'eip6963:requestProvider';
-        const MAINNET_CHAIN_ID_HEX = '0x1';
-        const MAX_PAYMENT_ETH = '1.0';
-
-        window.APP_CONFIG = Object.assign({
-            walletConnectProjectId: 'REPLACE_WITH_REOWN_PROJECT_ID',
-            appName: 'AB&T Airlines',
-            appDescription: 'AB&T Airlines crypto checkout',
-            appUrl: window.location.href,
-            appIcons: ['data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ctext y=%2250%22 font-size=%2248%22%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E'],
-            supportedChainIds: [1]
-        }, window.APP_CONFIG || {});
-
-        function normalizeAddress(addr) {
-            return typeof addr === 'string' ? addr.trim() : '';
-        }
-
-        function getPaymentQuote() {
-            const totalPriceUSD = Number(currentRoute?.priceUSD || 0) * Number(currentPassengers || 0);
-            const payableEth = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
-            const estimatedNetworkFeeEth = Number(GAS_FEE).toFixed(6);
-            const totalWithGas = (Number(payableEth) + Number(estimatedNetworkFeeEth)).toFixed(6);
-            return {
-                totalPriceUSD,
-                payableEth,
-                estimatedNetworkFeeEth,
-                totalWithGas
-            };
-        }
-
-        function shortenAddress(address) {
-            if (!address || address.length < 10) return address || '';
-            return `${address.slice(0, 6)}...${address.slice(-4)}`;
-        }
-
-        function removeProviderListeners(provider) {
-            if (!provider || typeof provider.removeListener !== 'function') return;
-            provider.removeListener('accountsChanged', handleAccountsChanged);
-            provider.removeListener('chainChanged', handleChainChanged);
-            provider.removeListener('disconnect', handleDisconnect);
-            provider.removeListener('connect', handleProviderConnect);
-        }
-
-        function attachProviderListeners(provider) {
-            if (!provider || typeof provider.on !== 'function') return;
-            removeProviderListeners(provider);
-            provider.on('accountsChanged', handleAccountsChanged);
-            provider.on('chainChanged', handleChainChanged);
-            provider.on('disconnect', handleDisconnect);
-            provider.on('connect', handleProviderConnect);
-        }
-
-        function handleProviderConnect(connectInfo) {
-            console.log('Provider connected:', connectInfo);
-        }
-
-        function registerInjectedProvider(detail) {
-            if (!detail || !detail.provider || !detail.info) return;
-            const key = detail.info.rdns || detail.info.uuid || detail.info.name;
-            if (!key) return;
-            injectedProviders.set(key, detail);
-            renderWalletChooserOptions();
-        }
-
-        function setupInjectedWalletDiscovery() {
-            if (window.__abtEip6963Setup) return;
-            window.__abtEip6963Setup = true;
-
-            window.addEventListener(ANNOUNCE_EVENT, (event) => {
-                registerInjectedProvider(event.detail);
-            });
-
-            window.dispatchEvent(new Event(REQUEST_EVENT));
-
-            setTimeout(() => {
-                if (injectedProviders.size === 0 && window.ethereum) {
-                    registerInjectedProvider({
-                        info: {
-                            name: window.ethereum.isMetaMask ? 'MetaMask' : 'Browser Wallet',
-                            rdns: window.ethereum.isMetaMask ? 'io.metamask' : 'injected.fallback',
-                            icon: ''
-                        },
-                        provider: window.ethereum
-                    });
-                }
-            }, 600);
-        }
-
-        function getWalletOptions() {
-            const options = [];
-            for (const detail of injectedProviders.values()) {
-                const rdns = detail.info.rdns || '';
-                const name = detail.info.name || 'Browser Wallet';
-                const normalized = name.toLowerCase();
-                if (rdns.includes('metamask') || normalized.includes('metamask')) {
-                    options.push({ id: 'metamask', label: 'MetaMask', sublabel: 'Browser extension / injected wallet', icon: '🦊', kind: 'injected', detail });
-                } else if (rdns.includes('uniswap') || normalized.includes('uniswap')) {
-                    options.push({ id: 'uniswap', label: 'Uniswap Wallet', sublabel: 'Browser extension / injected wallet', icon: '🦄', kind: 'injected', detail });
-                } else {
-                    options.push({ id: `inj-${rdns || normalized}`, label: name, sublabel: 'Injected browser wallet', icon: '💼', kind: 'injected', detail });
-                }
-            }
-
-            const hasWalletConnect = Boolean(window.APP_CONFIG.walletConnectProjectId && window.APP_CONFIG.walletConnectProjectId !== 'REPLACE_WITH_REOWN_PROJECT_ID');
-            options.push({
-                id: 'walletconnect',
-                label: 'WalletConnect',
-                sublabel: hasWalletConnect ? 'MetaMask Mobile, Uniswap Wallet, Rainbow, and more' : 'Add a Reown project ID to enable mobile / QR wallet connections',
-                icon: '🔗',
-                kind: 'walletconnect',
-                disabled: !hasWalletConnect
-            });
-
-            return options;
-        }
-
-        function ensureWalletChooserModal() {
-            if (document.getElementById('wallet-chooser-modal')) return;
-            const modal = document.createElement('div');
-            modal.id = 'wallet-chooser-modal';
-            modal.className = 'modal';
-            modal.innerHTML = `
-                <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="wallet-chooser-title">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
-                        <h2 id="wallet-chooser-title">Connect Wallet</h2>
-                        <button type="button" class="payment-spa-close" aria-label="Close" onclick="closeWalletChooser()">×</button>
-                    </div>
-                    <p style="margin:0 0 1rem 0;color:var(--text-light);">Choose MetaMask, Uniswap Wallet, or WalletConnect.</p>
-                    <div id="wallet-chooser-options" class="wallet-selection-options"></div>
-                    <div id="walletconnect-qr-panel" style="display:none;margin-top:1rem;">
-                        <div class="wallet-connected-card" style="background:#fff;border-color:#dbeafe;">
-                            <h4 style="margin:0 0 .5rem 0;">Scan to connect</h4>
-                            <p style="margin:0 0 1rem 0;color:var(--text-light);">Open MetaMask Mobile, Uniswap Wallet, or another WalletConnect-compatible wallet.</p>
-                            <canvas id="walletconnect-qr-canvas" style="display:block;margin:0 auto 1rem auto;max-width:100%;"></canvas>
-                            <div class="wallet-address-display" id="walletconnect-uri-text"></div>
-                            <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;">
-                                <button type="button" class="btn-payment btn-secondary" onclick="copyWalletConnectUri()">Copy URI</button>
-                                <button type="button" class="btn-payment btn-secondary" onclick="hideWalletConnectQr()">Back</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            document.body.appendChild(modal);
-        }
-
-        function renderWalletChooserOptions() {
-            const optionsEl = document.getElementById('wallet-chooser-options');
-            if (!optionsEl) return;
-            const options = getWalletOptions();
-            optionsEl.innerHTML = options.map((opt) => `
-                <button type="button" class="wallet-option-card" ${opt.disabled ? 'disabled aria-disabled="true" style="opacity:.6;cursor:not-allowed;"' : ''} onclick="handleWalletOption('${opt.id}')">
-                    <div class="wallet-icon">${opt.icon}</div>
-                    <h4>${opt.label}</h4>
-                    <p>${opt.sublabel}</p>
-                    <span class="wallet-option-arrow">→</span>
-                </button>
-            `).join('');
-        }
-
-        async function initWeb3() {
-            setupInjectedWalletDiscovery();
-            return injectedProviders.size > 0 || typeof window.ethereum !== 'undefined';
-        }
-
-        function openWalletChooser() {
-            ensureWalletChooserModal();
-            renderWalletChooserOptions();
-            document.getElementById('wallet-chooser-modal')?.classList.add('open');
-        }
-
-        function closeWalletChooser() {
-            document.getElementById('wallet-chooser-modal')?.classList.remove('open');
-            hideWalletConnectQr();
-        }
-
-        function hideWalletConnectQr() {
-            const panel = document.getElementById('walletconnect-qr-panel');
-            const options = document.getElementById('wallet-chooser-options');
-            if (panel) panel.style.display = 'none';
-            if (options) options.style.display = 'grid';
-        }
-
-        async function copyWalletConnectUri() {
-            const uri = document.getElementById('walletconnect-uri-text')?.textContent || '';
-            if (!uri) return;
-            await navigator.clipboard.writeText(uri);
-            showNotification('WalletConnect URI copied', 'success', 'Copied');
-        }
-
-        async function handleWalletOption(optionId) {
-            if (optionId === 'walletconnect') {
-                await connectWalletConnect();
-                return;
-            }
-            const selected = getWalletOptions().find((opt) => opt.id === optionId && opt.kind === 'injected');
-            if (!selected) {
-                showNotification('Selected wallet is not currently available.', 'error', 'Wallet Not Available');
-                return;
-            }
-            await connectInjectedWallet(selected.detail);
-        }
-
-        async function connectWallet() {
-            ensureWalletChooserModal();
-            const injected = getWalletOptions().filter((o) => o.kind === 'injected');
-            if (injected.length === 1) {
-                await connectInjectedWallet(injected[0].detail);
-                return;
-            }
-            openWalletChooser();
-        }
-
-        async function finalizeWalletConnection(provider, walletLabel, providerType) {
-            if (!provider) throw new Error('No wallet provider available');
-            const browserProvider = new ethers.BrowserProvider(provider, 'any');
-            const signer = await browserProvider.getSigner();
-            const address = normalizeAddress(await signer.getAddress());
-            if (!address) throw new Error('No account returned');
-
-            if (activeProvider && activeProvider !== provider) {
-                removeProviderListeners(activeProvider);
-            }
-
-            activeProvider = provider;
-            activeProviderType = providerType;
-            ethersBrowserProvider = browserProvider;
-            walletAddress = address;
-            walletConnected = true;
-            activeWalletName = walletLabel;
-
-            attachProviderListeners(provider);
-            updateWalletDisplay();
-            updatePaymentWalletSection();
-            closeWalletChooser();
-            hidePaymentLoader();
-            showNotification(`${walletLabel} connected: ${shortenAddress(walletAddress)}`, 'success', 'Wallet Connected');
-        }
-
-        async function connectInjectedWallet(detail) {
-            try {
-                showPaymentLoader();
-                const provider = detail?.provider || window.ethereum;
-                if (!provider) throw new Error('No injected wallet found');
-                await provider.request({ method: 'eth_requestAccounts' });
-                const label = detail?.info?.name || (provider.isMetaMask ? 'MetaMask' : 'Browser Wallet');
-                await finalizeWalletConnection(provider, label, 'injected');
-            } catch (error) {
-                hidePaymentLoader();
-                console.error('Injected wallet connection failed:', error);
-                showNotification(`Connection failed: ${error.message}`, 'error', 'Connection Failed');
-            }
-        }
-
-        async function getWalletConnectProvider() {
-            if (wcProvider) return wcProvider;
-            if (!window.WalletConnectEthereumProvider) {
-                throw new Error('WalletConnect module is still loading. Refresh and try again.');
-            }
-            const projectId = window.APP_CONFIG.walletConnectProjectId;
-            if (!projectId || projectId === 'REPLACE_WITH_REOWN_PROJECT_ID') {
-                throw new Error('WalletConnect requires a Reown project ID in APP_CONFIG.walletConnectProjectId.');
-            }
-
-            wcProvider = await window.WalletConnectEthereumProvider.init({
-                projectId,
-                chains: window.APP_CONFIG.supportedChainIds,
-                optionalChains: window.APP_CONFIG.supportedChainIds,
-                showQrModal: false,
-                metadata: {
-                    name: window.APP_CONFIG.appName,
-                    description: window.APP_CONFIG.appDescription,
-                    url: window.APP_CONFIG.appUrl,
-                    icons: window.APP_CONFIG.appIcons
-                }
-            });
-
-            wcProvider.on('display_uri', async (uri) => {
-                ensureWalletChooserModal();
-                const panel = document.getElementById('walletconnect-qr-panel');
-                const options = document.getElementById('wallet-chooser-options');
-                const uriEl = document.getElementById('walletconnect-uri-text');
-                const canvas = document.getElementById('walletconnect-qr-canvas');
-                if (uriEl) uriEl.textContent = uri;
-                if (options) options.style.display = 'none';
-                if (panel) panel.style.display = 'block';
-                if (canvas && window.QRCode?.toCanvas) {
-                    await QRCode.toCanvas(canvas, uri, { width: 260, margin: 1 });
-                }
-                hidePaymentLoader();
-            });
-
-            return wcProvider;
-        }
-
-        async function connectWalletConnect() {
-            try {
-                showPaymentLoader();
-                const provider = await getWalletConnectProvider();
-                await provider.enable();
-                await finalizeWalletConnection(provider, 'WalletConnect', 'walletconnect');
-            } catch (error) {
-                hidePaymentLoader();
-                console.error('WalletConnect connection failed:', error);
-                showNotification(`Connection failed: ${error.message}`, 'error', 'Connection Failed');
-            }
-        }
-
-        async function disconnectWallet(event) {
-            if (event) event.stopPropagation();
-            try {
-                if (activeProviderType === 'walletconnect' && wcProvider) {
-                    await wcProvider.disconnect();
-                }
-            } catch (error) {
-                console.warn('Wallet disconnect warning:', error);
-            }
-            if (activeProvider) removeProviderListeners(activeProvider);
-            activeProvider = null;
-            activeProviderType = null;
-            ethersBrowserProvider = null;
-            walletConnected = false;
-            walletAddress = '';
-            activeWalletName = '';
-            updateWalletDisplay();
-            updatePaymentWalletSection();
-            closeWalletChooser();
-            console.log('Wallet disconnected');
-        }
-
-        function handleAccountsChanged(accounts) {
-            if (!accounts || accounts.length === 0) {
-                disconnectWallet();
-                return;
-            }
-            walletAddress = normalizeAddress(accounts[0]);
-            walletConnected = true;
-            updateWalletDisplay();
-            updatePaymentWalletSection();
-            console.log('Account changed to:', walletAddress);
-        }
-
-        function handleChainChanged(chainId) {
-            console.log('Chain changed to:', chainId);
-            updateWalletDisplay();
-            updatePaymentWalletSection();
-        }
-
-        function handleDisconnect(error) {
-            console.log('Wallet disconnected:', error);
-            disconnectWallet();
-        }
-
-        async function ensureMainnet(provider) {
-            const chainId = await provider.request({ method: 'eth_chainId' });
-            if (chainId === MAINNET_CHAIN_ID_HEX) return;
-            try {
-                await provider.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: MAINNET_CHAIN_ID_HEX }]
-                });
-            } catch (error) {
-                throw new Error('Please switch your wallet to Ethereum Mainnet before paying.');
-            }
-        }
-
-        async function sendPaymentTransaction(toAddress, ethAmount) {
-            if (!walletConnected || !activeProvider || !ethersBrowserProvider) {
-                throw new Error('Wallet not connected');
-            }
-
-            const payableEth = Number(ethAmount);
-            if (!Number.isFinite(payableEth) || payableEth <= 0) {
-                throw new Error('Invalid payment amount');
-            }
-            if (payableEth > Number(MAX_PAYMENT_ETH)) {
-                throw new Error(`Amount exceeds safety limit of ${MAX_PAYMENT_ETH} ETH`);
-            }
-
-            await ensureMainnet(activeProvider);
-
-            const txValue = ethers.parseEther(payableEth.toFixed(6));
-            const txRequest = {
-                from: walletAddress,
-                to: normalizeAddress(toAddress),
-                value: '0x' + txValue.toString(16)
-            };
-
-            console.log('Prepared transaction:', {
-                ...txRequest,
-                valueEth: payableEth.toFixed(6)
-            });
-
-            const txHash = await activeProvider.request({
-                method: 'eth_sendTransaction',
-                params: [txRequest]
-            });
-
-            return txHash;
-        }
-
-        function updateWalletDisplay() {
-            const connectBtn = document.getElementById('wallet-connect-btn');
-            const statusDisplay = document.getElementById('wallet-status-display');
-            const searchBtn = document.getElementById('search-btn');
-            if (!connectBtn || !statusDisplay || !searchBtn) return;
-
-            if (walletConnected && walletAddress) {
-                connectBtn.innerHTML = `<span id="wallet-icon">✅</span><span id="wallet-text">${shortenAddress(walletAddress)}</span>`;
-                connectBtn.title = activeWalletName ? `${activeWalletName} connected` : 'Wallet connected';
-                statusDisplay.innerHTML = `<div class="wallet-status">${activeWalletName || 'Wallet'} Connected</div>`;
-                searchBtn.disabled = false;
-            } else {
-                connectBtn.innerHTML = `<span id="wallet-icon">💳</span><span id="wallet-text" data-en="Connect Wallet" data-it="Connetti Portafoglio">${currentLanguage === 'it' ? 'Connetti Portafoglio' : 'Connect Wallet'}</span>`;
-                connectBtn.title = 'Connect wallet for crypto payments';
-                statusDisplay.innerHTML = '';
-                searchBtn.disabled = false;
-            }
-        }
-
-        function updatePaymentWalletSection() {
-            const walletSection = document.getElementById('wallet-connection-section');
-            const continueBtn = document.getElementById('wallet-continue-btn');
-            if (!walletSection) return;
-
-            if (walletConnected && walletAddress) {
-                walletSection.innerHTML = `
-                    <div class="wallet-connected-card">
-                        <div class="wallet-connected-header">
-                            <div class="wallet-status-badge">✓</div>
-                            <div>
-                                <h4>${activeWalletName || 'Wallet'} connected</h4>
-                                <p>${currentLanguage === 'it' ? 'Pronto per il pagamento su Ethereum Mainnet.' : 'Ready to pay on Ethereum Mainnet.'}</p>
-                            </div>
-                        </div>
-                        <div class="wallet-address-display">${walletAddress}</div>
-                        <button class="btn-disconnect" onclick="disconnectWallet(event)">${currentLanguage === 'it' ? 'Disconnetti' : 'Disconnect'}</button>
-                    </div>`;
-                if (continueBtn) continueBtn.disabled = false;
-            } else {
-                walletSection.innerHTML = `
-                    <div class="wallet-selection-options">
-                        <button class="wallet-option-card" onclick="connectWallet()">
-                            <div class="wallet-icon">🦊</div>
-                            <h4>${currentLanguage === 'it' ? 'Connetti un portafoglio' : 'Connect a wallet'}</h4>
-                            <p>${currentLanguage === 'it' ? 'MetaMask, Uniswap Wallet o WalletConnect' : 'MetaMask, Uniswap Wallet, or WalletConnect'}</p>
-                            <span class="wallet-option-arrow">→</span>
-                        </button>
-                    </div>`;
-                if (continueBtn) continueBtn.disabled = true;
-            }
-        }
-
-        async function completePayment() {
-            if (!walletConnected) {
-                showNotification(currentLanguage === 'en' ? 'Please connect your wallet first' : 'Si prega di connettere il portafoglio prima', 'error', currentLanguage === 'en' ? 'Wallet Required' : 'Portafoglio Richiesto');
-                return;
-            }
-
-            const quote = getPaymentQuote();
-            if (Number(quote.payableEth) > Number(MAX_PAYMENT_ETH)) {
-                showNotification(currentLanguage === 'en' ? `Amount too high (${quote.payableEth} ETH). Please cancel and review the pricing logic.` : `Importo troppo alto (${quote.payableEth} ETH). Annulla e controlla la logica del prezzo.`, 'error', currentLanguage === 'en' ? 'Amount Validation Error' : 'Errore di Validazione Importo');
-                return;
-            }
-
-            try {
-                showPaymentLoader();
-                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, quote.payableEth);
-                hidePaymentLoader();
-                const successMsg = currentLanguage === 'en'
-                    ? `Booking confirmed! Flight: ${currentRoute.from.en} → ${currentRoute.to.en} | Passengers: ${currentPassengers} | Fare: ${quote.payableEth} ETH | Network fee paid separately by wallet | TX: ${txHash}`
-                    : `Prenotazione confermata! Volo: ${currentRoute.from.it} → ${currentRoute.to.it} | Passeggeri: ${currentPassengers} | Tariffa: ${quote.payableEth} ETH | Commissione di rete pagata separatamente dal portafoglio | TX: ${txHash}`;
-                showNotification(successMsg, 'success', currentLanguage === 'en' ? 'Booking Confirmed' : 'Prenotazione Confermata');
-                closePaymentModal();
-                document.getElementById('from-airport').value = '';
-                document.getElementById('to-airport').value = '';
-                document.getElementById('departure-date').value = '';
-                document.getElementById('passengers').value = '1';
-            } catch (error) {
-                hidePaymentLoader();
-                console.error('Payment error:', error);
-                showNotification((currentLanguage === 'en' ? 'Payment failed: ' : 'Pagamento fallito: ') + error.message, 'error', currentLanguage === 'en' ? 'Payment Failed' : 'Pagamento Fallito');
-            }
-        }
-
-        const __originalGoToStep = typeof goToStep === 'function' ? goToStep : null;
-        // ===== End production wallet layer overrides =====
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize wallet discovery
+            // Initialize Web3
             initWeb3();
             
             populateRoutes();
