@@ -3,179 +3,3729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Connect Deep Link</title>
+    <title>Digi Airlines - Your Journey, Our Passion</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #ff6b35;
+            --accent-color: #ffd700;
+            --dark-bg: #1a1a1a;
+            --light-bg: #f5f5f5;
+            --text-dark: #333;
+            --text-light: #666;
+            --crypto-green: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #004499 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .language-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .wallet-btn {
+            background: var(--crypto-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wallet-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .wallet-status {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--crypto-green);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid var(--crypto-green);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #004499 50%, var(--secondary-color) 100%);
+            color: white;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero .crypto-notice {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Flight Search Section */
+        .search-section {
+            background: var(--light-bg);
+            padding: 2rem 1rem;
+        }
+
+        .search-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .search-container h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .search-btn {
+            grid-column: 1 / -1;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-btn:hover {
+            background: #004499;
+        }
+
+        .search-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Routes Section */
+        .routes-section {
+            padding: 3rem 1rem;
+        }
+
+        .routes-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .route-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .route-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .route-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #004499 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .route-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .route-body {
+            padding: 1.5rem;
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .route-price {
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .route-price-crypto {
+            color: var(--crypto-green);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .route-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .route-btn:hover {
+            background: #004499;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: var(--light-bg);
+            padding: 3rem 1rem;
+        }
+
+        .map-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        #airline-map {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 3rem 1rem;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #444;
+            padding-top: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Payment SPA Styles - PayPal-inspired */
+        body.payment-active {
+            overflow: hidden;
+        }
+
+        body.payment-active > * {
+            display: none;
+        }
+
+        body.payment-active #paymentSPA {
+            display: block;
+        }
+
+        #paymentSPA {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            overflow-y: auto;
+            animation: slideInFromBottom 0.4s ease-out;
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .payment-spa-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-spa-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .payment-spa-back {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: color 0.3s;
+            padding: 0.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-spa-back:hover {
+            color: var(--primary-color);
+        }
+
+        .payment-spa-title {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+        }
+
+        .payment-spa-subtitle {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .payment-spa-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s;
+            padding: 0.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-spa-close:hover {
+            color: var(--text-dark);
+        }
+
+        /* Progress Indicator */
+        .payment-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: -1;
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .progress-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #e5e7eb;
+            border-radius: 50%;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .progress-step.active .progress-number {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-step.completed .progress-number {
+            background: var(--crypto-green);
+            color: white;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--primary-color);
+        }
+
+        .payment-modal-content {
+            background-color: transparent;
+            padding: 0;
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            max-width: none;
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        /* Payment Step Sections */
+        .payment-step-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .payment-step-section h3 {
+            color: var(--text-dark);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .payment-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .payment-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .payment-detail-label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .payment-detail-value {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* Flight Info Card - Mobile Optimized */
+        .flight-info-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #004499 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .flight-route {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .flight-city {
+            display: flex;
+            flex-direction: column;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .flight-arrow {
+            font-size: 1.5rem;
+            margin: 0 1rem;
+            opacity: 0.8;
+        }
+
+        .flight-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.85rem;
+        }
+
+        .flight-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .flight-detail-item strong {
+            font-size: 1.1rem;
+        }
+
+        /* Summary Card */
+        .payment-summary {
+            background: #f0f9ff;
+            border: 2px solid var(--primary-color);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .payment-summary-row.total {
+            border-top: 1px solid var(--primary-color);
+            padding-top: 0.75rem;
+            font-weight: 700;
+            color: var(--crypto-green);
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Friendly Buttons */
+        .payment-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-payment {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-payment:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-pay {
+            background: var(--crypto-green);
+            color: white;
+        }
+
+        .btn-pay:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Wallet Connection Notice */
+        .wallet-connection-notice {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .wallet-connection-notice.success {
+            background: #d1fae5;
+            border: 2px solid var(--crypto-green);
+            color: #065f46;
+        }
+
+        .wallet-connection-notice p {
+            margin: 0;
+        }
+
+        .wallet-address-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            word-break: break-all;
+        }
+
+        .connect-wallet-modal-btn {
+            width: 100%;
+            background: var(--crypto-green);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: background 0.3s;
+            font-size: 1rem;
+            min-height: 50px;
+        }
+
+        .connect-wallet-modal-btn:hover {
+            background: #059669;
+        }
+
+        /* Wallet Selection Cards */
+        .wallet-selection-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .wallet-option-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+        }
+
+        .wallet-option-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .wallet-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .wallet-option-card h4 {
+            margin: 0.75rem 0 0.5rem 0;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        .wallet-option-card p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .wallet-option-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .wallet-option-card:hover .wallet-option-arrow {
+            opacity: 1;
+        }
+
+        /* Wallet Connected Card */
+        .wallet-connected-card {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 2px solid var(--crypto-green);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .wallet-connected-header {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--crypto-green);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .wallet-connected-header h4 {
+            margin: 0;
+        }
+
+        .wallet-connected-header p {
+            margin: 0;
+        }
+
+        .wallet-address-display {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            line-height: 1.5;
+            color: var(--text-dark);
+        }
+
+        .btn-disconnect {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--text-light);
+            background: transparent;
+            color: var(--text-dark);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            margin-top: 0.75rem;
+        }
+
+        .btn-disconnect:hover {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: var(--text-dark);
+        }
+
+        /* Confirmation Screen Styles - Mobile Optimized */
+        .payment-confirmation-screen {
+            display: none;
+        }
+
+        .confirmation-header {
+            background: linear-gradient(135deg, var(--crypto-green) 0%, #059669 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .confirmation-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .confirmation-header p {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            opacity: 0.95;
+        }
+
+        .address-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .address-box-label {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .address-box-value {
+            background: #f9fafb;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #f0f0f0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            line-height: 1.4;
+        }
+
+        .confirmation-summary {
+            background: #f0f9ff;
+            border: 2px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirmation-summary p {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .confirmation-summary strong {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .confirmation-amount-highlight {
+            color: var(--crypto-green);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* CAPTCHA Verification - Mobile Friendly */
+        .captcha-container {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .captcha-header {
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .captcha-question {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #0066cc;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .captcha-input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .captcha-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .captcha-input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .captcha-input.error {
+            border-color: #dc2626;
+            background-color: rgba(220, 38, 38, 0.05);
+        }
+
+        .captcha-input.success {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .captcha-verify-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #0066cc 0%, #004499 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .captcha-verify-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .captcha-error {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .captcha-error.show {
+            display: block;
+        }
+
+        /* Notification Toast with Spinning Coin */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(0, 102, 204, 0.95) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideIn 0.4s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .notification-toast.error {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.95) 0%, rgba(153, 27, 27, 0.95) 100%);
+        }
+
+        .notification-toast.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(5, 150, 105, 0.95) 100%);
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            animation: spin 3s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .notification-toast.error .notification-icon {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .notification-toast.success .notification-icon {
+            animation: bounce 0.6s ease-out;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { transform: translateY(0); }
+            100% { opacity: 1; }
+        }
+
+        /* Image CAPTCHA */
+        .image-captcha-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .image-captcha-question {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+
+        .image-captcha-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .image-captcha-option {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-captcha-option:hover {
+            border-color: #0066cc;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+
+        .image-captcha-option.selected {
+            border-color: #0066cc;
+            background: rgba(0, 102, 204, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .image-captcha-option.correct {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            animation: pulse 0.5s ease;
+        }
+
+        .image-captcha-option.incorrect {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .image-captcha-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #0066cc 0%, #004499 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .image-captcha-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .image-captcha-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .confirmation-actions button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-height: 50px;
+        }
+
+        .btn-back {
+            background: #f0f0f0;
+            color: var(--text-dark);
+        }
+
+        .btn-back:hover {
+            background: #e5e7eb;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Spinning Gold Coin Loader */
+        @keyframes spin {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        .payment-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(2px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .spinning-coin-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #f5f5f5;
+            gap: 1.5rem;
         }
-        .container {
 
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Modern Wallet Payment Connection</title>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-                <style>
-                    body {
-                        font-family: 'Segoe UI', Arial, sans-serif;
-                        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                        min-height: 100vh;
-                        margin: 0;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                    .app-container {
-                        background: #fff;
-                        border-radius: 16px;
-                        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-                        padding: 2.5rem 2rem;
-                        max-width: 400px;
-                        width: 100%;
-                        text-align: center;
-                    }
-                    .wallet-status {
-                        margin: 1.5rem 0 1rem 0;
-                        font-size: 1.1rem;
-                        font-weight: 500;
-                        color: #1976d2;
-                        word-break: break-all;
-                    }
-                    .wallet-address {
-                        background: #f0f4f8;
-                        border-radius: 8px;
-                        padding: 0.75rem 1rem;
-                        font-family: 'Fira Mono', monospace;
-                        font-size: 1rem;
-                        color: #333;
-                        margin-bottom: 1.5rem;
-                        word-break: break-all;
-                    }
-                    .connect-btn {
-                        background: #1976d2;
-                        color: #fff;
-                        border: none;
-                        border-radius: 8px;
-                        padding: 1rem 2rem;
-                        font-size: 1.1rem;
-                        font-weight: 600;
-                        cursor: pointer;
-                        transition: background 0.2s;
-                        margin-bottom: 1rem;
-                    }
-                    .connect-btn:hover {
-                        background: #1251a3;
-                    }
-                    .wallet-icon {
-                        font-size: 2.5rem;
-                        margin-bottom: 1rem;
-                        color: #1976d2;
-                    }
-                    .error {
-                        color: #dc2626;
-                        margin-top: 1rem;
-                        font-size: 1rem;
-                    }
-                    .success {
-                        color: #10b981;
-                        margin-top: 1rem;
-                        font-size: 1rem;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="app-container">
-                    <div class="wallet-icon"><i class="fa-brands fa-ethereum"></i></div>
-                    <h2>Connect Your Wallet</h2>
-                    <div id="wallet-status" class="wallet-status">Connecting...</div>
-                    <div id="wallet-address" class="wallet-address" style="display:none;"></div>
-                    <button id="connect-btn" class="connect-btn" style="display:none;">Connect Wallet</button>
-                    <div id="error-message" class="error"></div>
-                    <div id="success-message" class="success"></div>
+        .spinning-coin {
+            width: 100px;
+            height: 100px;
+            perspective: 1000px;
+        }
+
+        .coin-front {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 25%, #FFE900 50%, #FFC700 75%, #FFD700 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #8B6914;
+            box-shadow: 
+                inset -2px -2px 5px rgba(0, 0, 0, 0.2),
+                inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+                0 8px 20px rgba(0, 0, 0, 0.15);
+            animation: spin 1.2s linear infinite, pulse-glow 2s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coin-front::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8), transparent);
+            border-radius: 50%;
+            filter: blur(3px);
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .payment-step-section {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: var(--primary-color);
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-right {
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            #airline-map {
+                height: 300px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            /* Mobile Payment SPA */
+            .payment-spa-container {
+                padding: 1rem;
+                max-width: 100%;
+                min-height: 100vh;
+            }
+
+            .payment-spa-header {
+                padding: 0.75rem 0;
+                margin-bottom: 1rem;
+            }
+
+            .payment-spa-title {
+                font-size: 1.15rem;
+            }
+
+            .payment-modal-content {
+                margin: 0;
+                max-width: none;
+                max-height: none;
+                padding: 0;
+            }
+
+            .payment-progress {
+                margin-bottom: 1.5rem;
+                gap: 0;
+            }
+
+            .progress-step {
+                flex: 1;
+            }
+
+            .progress-number {
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .progress-label {
+                font-size: 0.65rem;
+            }
+
+            .flight-info-card {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .flight-route {
+                margin-bottom: 0.75rem;
+            }
+
+            .flight-city {
+                font-size: 1rem;
+            }
+
+            .flight-arrow {
+                font-size: 1.25rem;
+                margin: 0 0.5rem;
+            }
+
+            .flight-details-grid {
+                gap: 0.75rem;
+                padding-top: 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .flight-detail-item strong {
+                font-size: 1rem;
+            }
+
+            .payment-step-section {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 6px;
+            }
+
+            .payment-step-section h3 {
+                font-size: 0.95rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .payment-summary {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+                border-radius: 6px;
+            }
+
+            .payment-summary-row {
+                font-size: 0.85rem;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .payment-summary-row.total {
+                font-size: 1rem;
+                padding-top: 0.5rem;
+                margin-bottom: 0;
+            }
+
+            .address-box-value {
+                font-size: 0.7rem;
+                padding: 0.5rem;
+            }
+
+            .confirmation-amount-highlight {
+                font-size: 1.1rem;
+            }
+
+            .captcha-container {
+                padding: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .captcha-question {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+
+            .captcha-input-group {
+                gap: 0.5rem;
+            }
+
+            .captcha-input {
+                padding: 0.65rem;
+                font-size: 0.95rem;
+            }
+
+            .captcha-verify-btn {
+                font-size: 0.9rem;
+                padding: 0.65rem;
+            }
+
+            .btn-payment {
+                min-height: 46px;
+                font-size: 0.95rem;
+                padding: 0.85rem;
+            }
+
+            .wallet-connection-notice {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+                margin-bottom: 1rem;
+            }
+
+            .wallet-address-display {
+                font-size: 0.75rem;
+            }
+
+            /* Mobile Wallet Selection Cards */
+            .wallet-option-card {
+                padding: 1.25rem 1rem;
+                border-radius: 10px;
+            }
+
+            .wallet-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .wallet-option-card h4 {
+                font-size: 1rem;
+                margin: 0.5rem 0 0.25rem 0;
+            }
+
+            .wallet-option-card p {
+                font-size: 0.75rem;
+            }
+
+            .wallet-option-arrow {
+                right: 0.75rem;
+            }
+
+            .wallet-connected-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .wallet-connected-header {
+                gap: 0.75rem;
+            }
+
+            .wallet-status-badge {
+                width: 36px;
+                height: 36px;
+                font-size: 1.25rem;
+            }
+
+            .wallet-connected-header h4 {
+                font-size: 0.95rem;
+            }
+
+            .wallet-connected-header p {
+                font-size: 0.8rem;
+            }
+
+            .wallet-address-display {
+                font-size: 0.75rem;
+                padding: 0.75rem;
+            }
+
+            .btn-disconnect {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .confirmation-header {
+                padding: 1rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .confirmation-header h3 {
+                font-size: 1rem;
+            }
+
+            .confirmation-header p {
+                font-size: 0.8rem;
+            }
+
+            .payment-btn-group {
+                gap: 0.75rem;
+                margin-top: 1rem;
+            }
+
+            .address-box {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .address-box-label {
+                font-size: 0.75rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .confirmation-summary {
+                padding: 0.75rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .confirmation-summary p {
+                font-size: 0.85rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .payment-detail-row {
+                padding: 0.5rem 0;
+            }
+
+            .payment-detail-label {
+                font-size: 0.85rem;
+            }
+
+            .payment-detail-value {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">✈️</span>
+                <span data-en="Digi Airlines" data-it="Digi Airlines">Digi Airlines</span>
+            </div>
+            <div class="nav-right">
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                <div id="wallet-status-display"></div>
+                <button class="wallet-btn" onclick="connectWallet()" id="wallet-connect-btn" title="Connect wallet for crypto payments">
+                    <span id="wallet-icon">💳</span>
+                    <span id="wallet-text" data-en="Connect Wallet" data-it="Connetti Portafoglio">Connect Wallet</span>
+                </button>
+                <button class="language-toggle" onclick="toggleLanguage()">
+                    <span id="lang-btn">IT</span>
+                </button>
+                <nav id="nav-menu">
+                    <a onclick="scrollToSection('search')" data-en="Book Flight" data-it="Prenota Volo">Book Flight</a>
+                    <a onclick="scrollToSection('routes')" data-en="Routes" data-it="Rotte">Routes</a>
+                    <a onclick="scrollToSection('map')" data-en="Network" data-it="Rete">Network</a>
+                    <a onclick="scrollToSection('about')" data-en="About Us" data-it="Chi Siamo">About Us</a>
+                    <a onclick="openContactModal()" data-en="Contact" data-it="Contatti">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 data-en="Fly with Us, Fly with Friends" data-it="Vola con Noi, Vola con Amici">Fly with Us, Fly with Friends</h1>
+        <p data-en="Experience premium travel with Digi Airlines - where every journey is an adventure" data-it="Sperimenta viaggi premium con Digi Airlines - dove ogni viaggio è un'avventura">Experience premium travel with Digi Airlines - where every journey is an adventure</p>
+        <div class="crypto-notice">
+            <strong data-en="💰 Crypto Only!" data-it="💰 Solo Cripto!">💰 Crypto Only!</strong>
+            <p data-en="We now accept cryptocurrency payments exclusively. Connect your wallet to book flights." data-it="Ora accettiamo pagamenti in criptovaluta esclusivamente. Connetti il tuo portafoglio per prenotare i voli.">We now accept cryptocurrency payments exclusively. Connect your wallet to book flights.</p>
+        </div>
+        <div class="cta-buttons">
+            <button class="btn btn-primary" onclick="scrollToSection('search')" data-en="Book Now" data-it="Prenota Ora">Book Now</button>
+            <button class="btn btn-secondary" onclick="openContactModal()" data-en="Learn More" data-it="Scopri di Più">Learn More</button>
+        </div>
+    </section>
+
+    <!-- Flight Search Section -->
+    <section class="search-section" id="search">
+        <div class="search-container">
+            <h2 data-en="✈️ Find Your Flight" data-it="✈️ Trova il Tuo Volo">✈️ Find Your Flight</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label data-en="From" data-it="Da">From</label>
+                    <select id="from-airport">
+                        <option value="" data-en="Select Departure" data-it="Seleziona Partenza">Select Departure</option>
+                        <option value="MXP" data-en="Milan - Malpensa (MXP)" data-it="Milano - Malpensa (MXP)">Milan - Malpensa (MXP)</option>
+                        <option value="MSO" data-en="Missoula (MSO)" data-it="Missoula (MSO)">Missoula (MSO)</option>
+                    </select>
                 </div>
-                <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-                <script>
-                    let web3;
-                    let provider;
-                    let walletAddress = null;
-                    const walletStatus = document.getElementById('wallet-status');
-                    const walletAddressDiv = document.getElementById('wallet-address');
-                    const connectBtn = document.getElementById('connect-btn');
-                    const errorDiv = document.getElementById('error-message');
-                    const successDiv = document.getElementById('success-message');
+                <div class="form-group">
+                    <label data-en="To" data-it="A">To</label>
+                    <select id="to-airport">
+                        <option value="" data-en="Select Destination" data-it="Seleziona Destinazione">Select Destination</option>
+                        <option value="MSO" data-en="Missoula (MSO)" data-it="Missoula (MSO)">Missoula (MSO)</option>
+                        <option value="MXP" data-en="Milan - Malpensa (MXP)" data-it="Milano - Malpensa (MXP)">Milan - Malpensa (MXP)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-en="Departure Date" data-it="Data di Partenza">Departure Date</label>
+                    <input type="date" id="departure-date">
+                </div>
+                <div class="form-group">
+                    <label data-en="Passengers" data-it="Passeggeri">Passengers</label>
+                    <select id="passengers">
+                        <option value="1" data-en="1 Passenger" data-it="1 Passeggero">1 Passenger</option>
+                        <option value="2" data-en="2 Passengers" data-it="2 Passeggeri">2 Passengers</option>
+                        <option value="3" data-en="3 Passengers" data-it="3 Passeggeri">3 Passengers</option>
+                        <option value="4" data-en="4 Passengers" data-it="4 Passeggeri">4 Passengers</option>
+                        <option value="5" data-en="5+ Passengers" data-it="5+ Passeggeri">5+ Passengers</option>
+                    </select>
+                </div>
+                <button class="search-btn" onclick="searchFlights()" id="search-btn" data-en="Search Flights" data-it="Cerca Voli">Search Flights</button>
+            </div>
+        </div>
+    </section>
 
-                    async function tryConnectWallet(auto = false) {
-                        errorDiv.textContent = '';
-                        successDiv.textContent = '';
-                        walletStatus.textContent = auto ? 'Connecting...' : '';
-                        walletStatus.style.color = '#1976d2';
-                        connectBtn.style.display = 'none';
-                        walletAddressDiv.style.display = 'none';
-                        // Try MetaMask/Uniswap (EIP-1193)
-                        if (window.ethereum) {
-                            try {
-                                provider = window.ethereum;
-                                await provider.request({ method: 'eth_requestAccounts' });
-                                web3 = new Web3(provider);
-                                const accounts = await web3.eth.getAccounts();
-                                walletAddress = accounts[0];
-                                walletStatus.textContent = 'Wallet Connected!';
-                                walletStatus.style.color = '#10b981';
-                                walletAddressDiv.textContent = walletAddress;
-                                walletAddressDiv.style.display = 'block';
-                                successDiv.textContent = 'You are connected to ' + (provider.isMetaMask ? 'MetaMask' : provider.isUniswap ? 'Uniswap Wallet' : 'your wallet') + '.';
-                                return;
-                            } catch (err) {
-                                errorDiv.textContent = 'Connection failed: ' + err.message;
-                                walletStatus.textContent = 'Not connected';
-                                walletStatus.style.color = '#dc2626';
-                                connectBtn.style.display = 'inline-block';
-                            }
-                        } else {
-                            // Fallback to WalletConnect
-                            try {
-                                provider = new window.WalletConnectProvider.default({
-                                    infuraId: '8043bb2cf316cb6b519b6724a4ce1d86'
-                                });
-                                await provider.enable();
-                                web3 = new Web3(provider);
-                                const accounts = await web3.eth.getAccounts();
-                                walletAddress = accounts[0];
-                                walletStatus.textContent = 'Wallet Connected!';
-                                walletStatus.style.color = '#10b981';
-                                walletAddressDiv.textContent = walletAddress;
-                                walletAddressDiv.style.display = 'block';
-                                successDiv.textContent = 'You are connected via WalletConnect.';
-                                return;
-                            } catch (err) {
-                                errorDiv.textContent = 'No wallet found. Please install MetaMask, Uniswap, or use WalletConnect.';
-                                walletStatus.textContent = 'Not connected';
-                                walletStatus.style.color = '#dc2626';
-                                connectBtn.style.display = 'inline-block';
-                            }
-                        }
+    <!-- Routes Section -->
+    <section class="routes-section" id="routes">
+        <div class="routes-container">
+            <h2 class="section-title" data-en="🌍 Our Routes" data-it="🌍 Le Nostre Rotte">🌍 Our Routes</h2>
+            <div class="routes-grid" id="routes-grid">
+                <!-- Routes will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section" id="map">
+        <div class="map-container">
+            <h2 class="section-title" data-en="🗺️ Our Network" data-it="🗺️ La Nostra Rete">🗺️ Our Network</h2>
+            <div id="airline-map"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 data-en="About Digi Airlines" data-it="Su Digi Airlines">About Digi Airlines</h2>
+                    <p data-en="Digi Airlines is a modern airline dedicated to connecting travelers across the United States and Europe with comfort, reliability, and a seamless digital-first experience." data-it="Digi Airlines è una compagnia aerea moderna dedicata a collegare i viaggiatori tra Stati Uniti ed Europa con comfort, affidabilità e un'esperienza digitale moderna.">Digi Airlines is a modern airline dedicated to connecting travelers across the United States and Europe with comfort, reliability, and a seamless digital-first experience.</p>
+                    <p data-en="Our fleet is carefully curated to provide the best experience whether you're traveling for business or leisure. We believe in making air travel accessible, affordable, and enjoyable." data-it="La nostra flotta è accuratamente selezionata per fornire la migliore esperienza sia che tu stia viaggiando per affari o piacere. Crediamo nel rendere i viaggi aerei accessibili, convenienti e piacevoli.">Our fleet is carefully curated to provide the best experience whether you're traveling for business or leisure. We believe in making air travel accessible, affordable, and enjoyable.</p>
+                    <p data-en="With a focus on customer satisfaction and innovative service, Digi Airlines is your trusted partner for every journey." data-it="Con un focus sulla soddisfazione del cliente e servizi innovativi, Digi Airlines è il tuo partner affidabile per ogni viaggio.">With a focus on customer satisfaction and innovative service, Digi Airlines is your trusted partner for every journey.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label" data-en="Hub Cities" data-it="Città Hub">Hub Cities</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label" data-en="Active Routes" data-it="Rotte Attive">Active Routes</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label" data-en="Satisfaction" data-it="Soddisfazione">Satisfaction</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label" data-en="Support" data-it="Supporto">Support</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); border-radius: 10px; padding: 2rem; color: white; text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">✈️</div>
+                    <h3 data-en="Ready to Fly?" data-it="Pronto a Volare?">Ready to Fly?</h3>
+                    <p style="margin-top: 1rem;" data-en="Join travelers worldwide who trust Digi Airlines" data-it="Unisciti ai viaggiatori di tutto il mondo che si affidano a Digi Airlines">Join travelers worldwide who trust Digi Airlines</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="scrollToSection('search')" data-en="Book Your Flight" data-it="Prenota il Tuo Volo">Book Your Flight</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 data-en="Quick Links" data-it="Link Veloci">Quick Links</h3>
+                <a href="#search" data-en="Book Flight" data-it="Prenota Volo">Book Flight</a>
+                <a href="#routes" data-en="Routes" data-it="Rotte">Routes</a>
+                <a href="#map" data-en="Network" data-it="Rete">Network</a>
+                <a href="#about" data-en="About Us" data-it="Chi Siamo">About Us</a>
+            </div>
+            <div class="footer-section">
+                <h3 data-en="Support" data-it="Supporto">Support</h3>
+                <a href="#" onclick="openContactModal()" data-en="Contact Us" data-it="Contattaci">Contact Us</a>
+                <a href="#" data-en="FAQs" data-it="Domande Frequenti">FAQs</a>
+                <a href="#" data-en="Baggage Info" data-it="Info Bagaglio">Baggage Info</a>
+                <a href="#" data-en="Loyalty Program" data-it="Programma Fedeltà">Loyalty Program</a>
+            </div>
+            <div class="footer-section">
+                <h3 data-en="Follow Us" data-it="Seguici">Follow Us</h3>
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p data-en="© 2024 Digi Airlines. All rights reserved. ✈️" data-it="© 2024 Digi Airlines. Tutti i diritti riservati. ✈️">© 2024 Digi Airlines. All rights reserved. ✈️</p>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeContactModal()">&times;</span>
+            <h2 data-en="Contact Us" data-it="Contattaci">Contact Us</h2>
+            <form onsubmit="handleContactSubmit(event)">
+                <div class="form-group">
+                    <label data-en="Name" data-it="Nome">Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label data-en="Email" data-it="Email">Email</label>
+                    <input type="email" required>
+                </div>
+                <div class="form-group">
+                    <label data-en="Message" data-it="Messaggio">Message</label>
+                    <textarea required style="padding: 0.75rem; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; min-height: 150px;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" data-en="Send Message" data-it="Invia Messaggio">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment SPA -->
+    <div id="paymentSPA">
+        <!-- Loading Indicator with Spinning Coin -->
+        <div id="payment-loading-overlay" class="payment-loading-overlay" style="display: none;">
+            <div class="spinning-coin-container">
+                <div class="spinning-coin">
+                    <div class="coin-front">₿</div>
+                </div>
+                <p class="loading-text" data-en="Processing..." data-it="Elaborazione in corso...">Processing...</p>
+            </div>
+        </div>
+
+        <div class="payment-spa-container">
+            <!-- Header -->
+            <div class="payment-spa-header">
+                <button class="payment-spa-back" onclick="backFromPaymentSPA()" id="spa-back-btn" style="display: none;">←</button>
+                <div style="flex: 1;">
+                    <h1 class="payment-spa-title" id="spa-title" data-en="Payment" data-it="Pagamento">Payment</h1>
+                </div>
+                <button class="payment-spa-close" onclick="closePaymentSPA()">✕</button>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="payment-progress" id="payment-progress">
+                <div class="progress-step active" id="progress-1">
+                    <div class="progress-number">1</div>
+                    <div class="progress-label" data-en="Review" data-it="Revisione">Review</div>
+                </div>
+                <div class="progress-step" id="progress-2">
+                    <div class="progress-number">2</div>
+                    <div class="progress-label" data-en="Wallet" data-it="Portafoglio">Wallet</div>
+                </div>
+                <div class="progress-step" id="progress-3">
+                    <div class="progress-number">3</div>
+                    <div class="progress-label" data-en="Details" data-it="Dettagli">Details</div>
+                </div>
+                <div class="progress-step" id="progress-4">
+                    <div class="progress-number">4</div>
+                    <div class="progress-label" data-en="Confirm" data-it="Conferma">Confirm</div>
+                </div>
+            </div>
+
+            <div class="payment-modal-content">
+                <!-- Step 1: Review Order -->
+                <div id="payment-step-1" style="display: block;">
+                    <div class="flight-info-card">
+                        <div class="flight-route">
+                            <div class="flight-city">
+                                <span id="step1-from">---</span>
+                            </div>
+                            <div class="flight-arrow">→</div>
+                            <div class="flight-city">
+                                <span id="step1-to">---</span>
+                            </div>
+                        </div>
+                        <div class="flight-details-grid">
+                            <div class="flight-detail-item">
+                                <strong id="step1-passengers">1</strong>
+                                <span data-en="Passenger" data-it="Passeggero">Passenger</span>
+                            </div>
+                            <div class="flight-detail-item">
+                                <strong id="step1-price">$0</strong>
+                                <span data-en="Total" data-it="Totale">Total</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-summary">
+                        <div class="payment-summary-row">
+                            <span data-en="Subtotal:" data-it="Subtotale:">Subtotal:</span>
+                            <span id="step1-subtotal">$0</span>
+                        </div>
+                        <div class="payment-summary-row">
+                            <span data-en="Gas Fee:" data-it="Commissione Gas:">Gas Fee:</span>
+                            <span id="step1-gas">0.001 ETH</span>
+                        </div>
+                        <div class="payment-summary-row total">
+                            <span data-en="Total (ETH):" data-it="Totale (ETH):">Total (ETH):</span>
+                            <span id="step1-total-eth">0 ETH</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-btn-group">
+                        <button class="btn-payment btn-pay" onclick="goToStep(2)" data-en="Continue" data-it="Continua">Continue</button>
+                        <button class="btn-payment btn-secondary" onclick="closePaymentModal()" data-en="Cancel Order" data-it="Annulla Ordine">Cancel Order</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Wallet Connection -->
+                <div id="payment-step-2" style="display: none;">
+                    <div class="payment-step-section">
+                        <h3 data-en="Connect Your Wallet" data-it="Connetti il Tuo Portafoglio">Connect Your Wallet</h3>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;" data-en="Select a Web3 wallet to complete your payment securely" data-it="Seleziona un portafoglio Web3 per completare il pagamento in modo sicuro">Select a Web3 wallet to complete your payment securely</p>
+                        <div id="wallet-connection-section"></div>
+                    </div>
+
+                    <div class="payment-btn-group">
+                        <button class="btn-payment btn-pay" onclick="proceedToStep3()" id="wallet-continue-btn" style="display: none;" data-en="Continue to Payment Details" data-it="Continua ai Dettagli del Pagamento">Continue to Payment Details</button>
+                        <button class="btn-payment btn-secondary" onclick="goToStep(1)" data-en="Back" data-it="Indietro">Back</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Details -->
+                <div id="payment-step-3" style="display: none;">
+                    <div class="payment-step-section">
+                        <h3 data-en="Payment Details" data-it="Dettagli Pagamento">Payment Details</h3>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;" data-en="From Your Wallet" data-it="Dal Tuo Portafoglio">From Your Wallet</label>
+                            <div class="address-box-value" id="step3-from-wallet">0x000...000</div>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;" data-en="To Digi Airlines" data-it="A Digi Airlines">To Digi Airlines</label>
+                            <div class="address-box-value">0x834F4FE6A07a9C8C67846Bb435D413e6033cd5cf</div>
+                        </div>
+                    </div>
+
+                    <div class="confirmation-summary" style="margin-top: 1.5rem;">
+                        <p>
+                            <strong data-en="Amount:" data-it="Importo:">Amount:</strong>
+                            <span class="confirmation-amount-highlight" id="step3-amount">0 ETH</span>
+                        </p>
+                    </div>
+
+                    <div class="payment-btn-group">
+                        <button class="btn-payment btn-pay" onclick="goToStep(4)" data-en="Review & Confirm" data-it="Rivedi e Conferma">Review & Confirm</button>
+                        <button class="btn-payment btn-secondary" onclick="goToStep(2)" data-en="Back" data-it="Indietro">Back</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirm & Pay -->
+                <div id="payment-step-4" style="display: none;">
+                    <div class="confirmation-header">
+                        <h3 data-en="Confirm Payment" data-it="Conferma Pagamento">Confirm Payment</h3>
+                        <p data-en="Slide to complete your booking" data-it="Scorri per completare la tua prenotazione">Slide to complete your booking</p>
+                    </div>
+
+                    <div class="payment-step-section">
+                        <h3 data-en="Order Summary" data-it="Riepilogo Ordine">Order Summary</h3>
+                        <div class="payment-detail-row">
+                            <span class="payment-detail-label" data-en="Flight:" data-it="Volo:">Flight:</span>
+                            <span class="payment-detail-value" id="step4-flight">---</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="payment-detail-label" data-en="Passengers:" data-it="Passeggeri:">Passengers:</span>
+                            <span class="payment-detail-value" id="step4-passengers">1</span>
+                        </div>
+                        <div class="payment-detail-row">
+                            <span class="payment-detail-label" data-en="Amount:" data-it="Importo:">Amount:</span>
+                            <span class="payment-detail-value confirmation-amount-highlight" id="step4-amount">0 ETH</span>
+                        </div>
+                    </div>
+
+                    <div class="captcha-container" id="captcha-container">
+                        <div class="captcha-header">
+                            <span>🔐</span>
+                            <span data-en="Verify you are human" data-it="Verifica che sei umano">Verify you are human</span>
+                        </div>
+                        <div class="image-captcha-container">
+                            <div class="captcha-question" id="captcha-question"></div>
+                            <div class="image-captcha-grid" id="captcha-grid"></div>
+                        </div>
+                        <div class="captcha-error" id="captcha-error"></div>
+                    </div>
+
+                    <div class="payment-btn-group">
+                        <button class="btn-payment btn-secondary" onclick="goToStep(3)" data-en="Back" data-it="Indietro">Back</button>
+                    </div>
+                </div>
+        
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <!-- WalletConnect and Web3 Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+
+    <script>
+        // Wallet State with WalletConnect
+        let walletConnected = false;
+        let walletAddress = '';
+        let web3 = null;
+        let connector = null;
+        let currentLanguage = 'en';
+        let currentRoute = null;
+        let currentPassengers = 0;
+        let currentPaymentStep = 1;
+
+        // Recipient address
+        const RECIPIENT_ADDRESS = '0x834F4FE6A07a9C8C67846Bb435D413e6033cd5cf';
+        const GAS_FEE = 0.001; // Estimated gas fee in ETH
+        const ETH_CONVERSION_RATE = 0.00003; // 1 USD = 0.00003 ETH
+
+        // Gas Price Caching - Prevents lag and timeout issues
+        let cachedGasPrice = null;
+        let gasPriceCacheTime = 0;
+        const GAS_PRICE_CACHE_DURATION = 30000; // 30 seconds
+        const GAS_PRICE_TIMEOUT = 5000; // 5 second timeout
+        const GAS_PRICE_FALLBACK = web3 ? web3.utils.toWei('50', 'gwei') : null;
+
+        // Initialize Web3
+        function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                console.log('Web3 initialized with MetaMask provider');
+                return true;
+            }
+            return false;
+        }
+
+        // Connect Wallet using MetaMask or WalletConnect
+        async function connectWallet() {
+            try {
+                console.log('Starting wallet connection...');
+                showPaymentLoader();
+
+                if (window.location.protocol === 'file:') {
+                    throw new Error('This page must be served over http://localhost, not opened as a file. Start a local web server and try again.');
+                }
+
+                let provider;
+
+                // First try MetaMask / injected wallet
+                if (typeof window.ethereum !== 'undefined') {
+                    console.log('Injected wallet detected, using window.ethereum');
+                    provider = window.ethereum;
+                } else {
+                    // Fallback: WalletConnect provider
+                    console.log('Injected wallet not found, attempting WalletConnect...');
+                    const WalletConnectProvider = window.WalletConnectProvider?.default || window.WalletConnectProvider;
+
+                    if (!WalletConnectProvider) {
+                        throw new Error('WalletConnect provider failed to load');
                     }
 
-                    // Try to connect on load
-                    window.addEventListener('DOMContentLoaded', function() {
-                        tryConnectWallet(true);
-                        connectBtn.addEventListener('click', function() {
-                            tryConnectWallet(false);
-                        });
+                    provider = new WalletConnectProvider({
+                        infuraId: '8043bb2cf316cb6b519b6724a4ce1d86',
+                        qrcode: true
                     });
-                </script>
-            </body>
-            </html>
+
+                    if (typeof provider.enable === 'function') {
+                        await provider.enable();
+                    }
+                }
+
+                // Request accounts
+                const accounts = await provider.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+
+                if (!accounts || accounts.length === 0) {
+                    throw new Error('No accounts returned');
+                }
+
+                walletAddress = accounts[0];
+                walletConnected = true;
+                
+                // Initialize Web3 with the provider
+                if (!web3) {
+                    web3 = new Web3(provider);
+                }
+
+                console.log('Wallet connected successfully!');
+                console.log('Address:', walletAddress);
+
+                updateWalletDisplay();
+                updatePaymentWalletSection();
+
+                hidePaymentLoader();
+
+                const msg = currentLanguage === 'en' 
+                    ? walletAddress.substring(0, 6) + '...' + walletAddress.substring(38)
+                    : walletAddress.substring(0, 6) + '...' + walletAddress.substring(38);
+                showNotification(msg, 'success', currentLanguage === 'en' ? 'Wallet Connected' : 'Portafoglio Connesso');
+
+                // Setup account change listener
+                if (provider.on) {
+                    provider.on('accountsChanged', handleAccountsChanged);
+                    provider.on('chainChanged', handleChainChanged);
+                    provider.on('disconnect', handleDisconnect);
+                }
+
+            } catch (error) {
+                hidePaymentLoader();
+                console.error('Wallet connection failed:', error);
+                
+                const msg = currentLanguage === 'en' 
+                    ? 'Connection failed: ' + error.message
+                    : 'Connessione fallita: ' + error.message;
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Connection Failed' : 'Connessione Fallita');
+            }
+        }
+
+        // Handle account changes
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                disconnectWallet();
+            } else {
+                walletAddress = accounts[0];
+                updateWalletDisplay();
+                updatePaymentWalletSection();
+                console.log('Account changed to:', walletAddress);
+            }
+        }
+
+        // Handle chain changes
+        function handleChainChanged(chainId) {
+            console.log('Chain changed to:', chainId);
+            window.location.reload();
+        }
+
+        // Handle disconnect
+        function handleDisconnect(code, reason) {
+            console.log('Wallet disconnected:', code, reason);
+            disconnectWallet();
+        }
+
+        // Gas Price Caching Function - Reduces RPC calls and prevents timeout lag
+        async function getGasPriceWithCache() {
+            const now = Date.now();
+            if (cachedGasPrice && (now - gasPriceCacheTime) < GAS_PRICE_CACHE_DURATION) {
+                console.log('⚡ Using cached gas price');
+                return cachedGasPrice;
+            }
+            try {
+                const pricePromise = web3.eth.getGasPrice();
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Gas price timeout')), GAS_PRICE_TIMEOUT)
+                );
+                const gasPrice = await Promise.race([pricePromise, timeoutPromise]);
+                cachedGasPrice = gasPrice;
+                gasPriceCacheTime = now;
+                console.log('📡 Gas price fetched:', gasPrice);
+                return gasPrice;
+            } catch (error) {
+                console.warn('⚠️ Gas price fetch failed, using fallback');
+                return GAS_PRICE_FALLBACK;
+            }
+        }
+
+        // Payment Helper Functions
+        async function sendPaymentTransaction(toAddress, ethAmount) {
+            if (!walletConnected || !web3) {
+                throw new Error('Wallet not connected');
+            }
+
+            try {
+                console.log('Preparing transaction...');
+                console.log('📤 To:', toAddress);
+                console.log('📤 Amount (ETH):', ethAmount);
+                console.log('📤 Amount type:', typeof ethAmount);
+
+                // Get current gas price (with caching and timeout protection)
+                const gasPriceRaw = await getGasPriceWithCache();
+                
+                // Convert gasPrice to hex string for MetaMask compatibility
+                const gasPrice = web3.utils.toHex(gasPriceRaw);
+                
+                // Always pass ethAmount as a string, and avoid .toFixed() for toWei
+                const weiValue = web3.utils.toWei(String(ethAmount), 'ether');
+
+                const txData = {
+                    from: walletAddress,
+                    to: toAddress,
+                    value: weiValue,
+                    gas: web3.utils.toHex(21000),
+                    gasPrice: gasPrice
+                };
+
+                console.log('📤 Wei Value:', weiValue);
+                console.log('📤 Wei Value (ETH):', web3.utils.fromWei(weiValue, 'ether'));
+                console.log('📤 Transaction data:', txData);
+
+                // Request signature from user
+                const txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [txData]
+                });
+
+                console.log('✅ Transaction sent:', txHash);
+                return txHash;
+
+            } catch (error) {
+                console.error('❌ Transaction failed:', error);
+                throw error;
+            }
+        }
+
+        // Routes Data - Milan to Missoula Direct with Rotating Schedule
+        const routes = [
+            // Missoula → Milan (Morning)
+            {
+                from: { en: 'Missoula', it: 'Missoula' },
+                to: { en: 'Milan', it: 'Milano' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MSO',
+                toCode: 'MXP',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '06:00',
+                arrivalTime: '20:30'
+            },
+            // Missoula → Milan (Afternoon)
+            {
+                from: { en: 'Missoula', it: 'Missoula' },
+                to: { en: 'Milan', it: 'Milano' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MSO',
+                toCode: 'MXP',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '14:00',
+                arrivalTime: '04:30 (+1)'
+            },
+            // Missoula → Milan (Evening)
+            {
+                from: { en: 'Missoula', it: 'Missoula' },
+                to: { en: 'Milan', it: 'Milano' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MSO',
+                toCode: 'MXP',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '22:00',
+                arrivalTime: '12:30 (+1)'
+            },
+            // Milan → Missoula (Morning)
+            {
+                from: { en: 'Milan', it: 'Milano' },
+                to: { en: 'Missoula', it: 'Missoula' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MXP',
+                toCode: 'MSO',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '07:00',
+                arrivalTime: '11:30'
+            },
+            // Milan → Missoula (Afternoon)
+            {
+                from: { en: 'Milan', it: 'Milano' },
+                to: { en: 'Missoula', it: 'Missoula' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MXP',
+                toCode: 'MSO',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '13:30',
+                arrivalTime: '18:00'
+            },
+            // Milan → Missoula (Evening)
+            {
+                from: { en: 'Milan', it: 'Milano' },
+                to: { en: 'Missoula', it: 'Missoula' },
+                price: 799,
+                priceUSD: 799,
+                duration: '11h 30m',
+                frequency: { en: 'Daily', it: 'Giornaliero' },
+                fromCode: 'MXP',
+                toCode: 'MSO',
+                aircraft: { en: 'Airbus A350-900', it: 'Airbus A350-900' },
+                stops: { en: 'Direct', it: 'Diretto' },
+                departureTime: '21:00',
+                arrivalTime: '01:30 (+1)'
+            }
+        ];
+
+        // Airport Coordinates - Milan and Missoula Only
+        const airports = {
+            'MXP': { 
+                lat: 45.6295, 
+                lng: 8.7281, 
+                name: { en: 'Milan - Malpensa (MXP)', it: 'Milano - Malpensa (MXP)' },
+                country: { en: 'Italy', it: 'Italia' }
+            },
+            'MSO': { 
+                lat: 46.8722, 
+                lng: -113.9940, 
+                name: { en: 'Missoula (MSO)', it: 'Missoula (MSO)' },
+                country: { en: 'United States', it: 'Stati Uniti' }
+            }
+        };
+
+        // Payment Flow - Step Navigation
+        function goToStep(step) {
+            console.log('goToStep called with step:', step);
+            
+            // Show loading indicator for smooth transition
+            showPaymentLoader();
+            
+            // Only proceed if payment modal is open and elements exist
+            const paymentSPA = document.getElementById('paymentSPA');
+            if (!paymentSPA || paymentSPA.style.display !== 'block') {
+                console.error('Payment SPA not open or not found');
+                hidePaymentLoader();
+                return;
+            }
+
+            if (step === 2 && !currentRoute) {
+                const msg = currentLanguage === 'en' 
+                    ? 'No flight selected'
+                    : 'Nessun volo selezionato';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'No Flight' : 'Nessun Volo');
+                console.error('No route for step 2');
+                hidePaymentLoader();
+                return;
+            }
+
+            // Step 3 guard removed - now checked in proceedToStep3() instead
+            // to allow manual step navigation via goToStep(3) from proceedToStep3()
+
+            // Hide all steps - with null checks
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`payment-step-${i}`);
+                if (stepElement) {
+                    stepElement.style.display = 'none';
+                }
+                const progressElement = document.getElementById(`progress-${i}`);
+                if (progressElement) {
+                    progressElement.classList.remove('active', 'completed');
+                }
+            }
+
+            // Show current step and update progress
+            const currentStepElement = document.getElementById(`payment-step-${step}`);
+            if (currentStepElement) {
+                currentStepElement.style.display = 'block';
+                console.log(`Payment step ${step} displayed`);
+            } else {
+                console.error(`Payment step ${step} element not found`);
+            }
+            
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                const progressElement = document.getElementById(`progress-${i}`);
+                if (progressElement) {
+                    progressElement.classList.add('completed');
+                }
+            }
+            
+            // Mark current step as active
+            const currentProgressElement = document.getElementById(`progress-${step}`);
+            if (currentProgressElement) {
+                currentProgressElement.classList.add('active');
+            }
+
+            currentPaymentStep = step;
+
+            // Update step-specific data
+            const spaTitle = document.getElementById('spa-title');
+            const spaBackBtn = document.getElementById('spa-back-btn');
+
+            if (step === 1) {
+                if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Review Your Order' : 'Rivedi il Tuo Ordine';
+                updateStep1();
+                if (spaBackBtn) spaBackBtn.style.display = 'none';
+                console.log('Step 1 updated');
+            } else if (step === 2) {
+                if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Connect Wallet' : 'Connetti Portafoglio';
+                updateStep2();
+                if (spaBackBtn) spaBackBtn.style.display = 'flex';
+                console.log('Step 2 updated');
+            } else if (step === 3) {
+                if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Payment Details' : 'Dettagli Pagamento';
+                updateStep3();
+                if (spaBackBtn) spaBackBtn.style.display = 'flex';
+                console.log('Step 3 updated');
+            } else if (step === 4) {
+                if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Confirm & Pay' : 'Conferma e Paga';
+                updateStep4();
+                if (spaBackBtn) spaBackBtn.style.display = 'flex';
+                console.log('Step 4 updated');
+            }
+
+            // Hide loader after step transition (brief delay for visual effect)
+            setTimeout(() => hidePaymentLoader(), 300);
+        }
+
+        async function updateStep1() {
+            if (!currentRoute) return;
+            // 30% heavily discounted price
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
+            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
+
+            const fromText = currentRoute.from[currentLanguage];
+            const toText = currentRoute.to[currentLanguage];
+
+            const el1 = document.getElementById('step1-from');
+            const el2 = document.getElementById('step1-to');
+            const el3 = document.getElementById('step1-passengers');
+            const el4 = document.getElementById('step1-price');
+            const el5 = document.getElementById('step1-subtotal');
+            const el6 = document.getElementById('step1-gas');
+            const el7 = document.getElementById('step1-total-eth');
+
+            if (el1) el1.textContent = fromText;
+            if (el2) el2.textContent = toText;
+            if (el3) el3.textContent = currentPassengers;
+            if (el4) el4.textContent = `$${totalPriceUSD}`;
+            if (el5) el5.textContent = `$${totalPriceUSD}`;
+            if (el6) el6.textContent = `${GAS_FEE} ETH`;
+            if (el7) el7.textContent = `${totalWithGas} ETH`;
+        }
+
+        function updateStep2() {
+            updatePaymentWalletSection();
+        }
+
+        async function updateStep3() {
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
+            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
+
+            const el1 = document.getElementById('step3-from-wallet');
+            const el2 = document.getElementById('step3-amount');
+
+            if (el1) el1.textContent = walletAddress;
+            if (el2) el2.textContent = `${totalWithGas} ETH`;
+        }
+
+        async function updateStep4() {
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
+            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
+
+            const flightText = currentLanguage === 'en'
+                ? `${currentRoute.from.en} → ${currentRoute.to.en}`
+                : `${currentRoute.from.it} → ${currentRoute.to.it}`;
+
+            const el1 = document.getElementById('step4-flight');
+            const el2 = document.getElementById('step4-passengers');
+            const el3 = document.getElementById('step4-amount');
+
+            if (el1) el1.textContent = flightText;
+            if (el2) el2.textContent = currentPassengers;
+            if (el3) el3.textContent = `${totalWithGas} ETH`;
+    
+            // Initialize CAPTCHA for this step
+            initializeCaptcha();
+        }
+
+        function connectWalletFromPayment() {
+            connectWallet();
+        }
+
+        function disconnectWallet(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            walletConnected = false;
+            walletAddress = '';
+            web3 = null;
+            
+            updateWalletDisplay();
+            updatePaymentWalletSection();
+            
+            console.log('Wallet disconnected');
+        }
+
+        function updateWalletDisplay() {
+            const connectBtn = document.getElementById('wallet-connect-btn');
+            const statusDisplay = document.getElementById('wallet-status-display');
+            const searchBtn = document.getElementById('search-btn');
+
+            // Safe null checks before accessing properties
+            if (!connectBtn || !statusDisplay || !searchBtn) {
+                console.warn('Wallet display elements not found:', { connectBtn, statusDisplay, searchBtn });
+                return;
+            }
+
+            if (walletConnected) {
+                connectBtn.textContent = '✓ ' + walletAddress.substring(0, 6) + '...' + walletAddress.substring(38);
+                connectBtn.style.background = 'var(--crypto-green)';
+                connectBtn.style.color = 'white';
+                statusDisplay.innerHTML = `<div class="wallet-status">${currentLanguage === 'en' ? 'Connected' : 'Connesso'}</div>`;
+                searchBtn.disabled = false;
+            } else {
+                connectBtn.textContent = currentLanguage === 'en' ? '💳 Connect Wallet' : '💳 Connetti Portafoglio';
+                connectBtn.style.background = 'var(--crypto-green)';
+                statusDisplay.innerHTML = '';
+                searchBtn.disabled = false;
+            }
+        }
+
+        // Loading Indicator Functions
+        function showPaymentLoader() {
+            const loader = document.getElementById('payment-loading-overlay');
+            if (loader) {
+                loader.style.display = 'flex';
+                console.log('✨ Payment loader shown');
+            }
+        }
+
+        function hidePaymentLoader() {
+            const loader = document.getElementById('payment-loading-overlay');
+            if (loader) {
+                loader.style.display = 'none';
+                console.log('✨ Payment loader hidden');
+            }
+        }
+
+        function proceedToStep3() {
+            console.log('proceedToStep3 called');
+            console.log('Wallet connected:', walletConnected);
+            console.log('Wallet address:', walletAddress);
+            console.log('Current route:', currentRoute);
+            if (walletConnected && currentRoute) {
+                goToStep(3);
+            } else {
+                console.error('Cannot proceed: wallet=' + walletConnected + ', route=' + !!currentRoute);
+                const msg = currentLanguage === 'en' ? 'Error: Wallet not connected or no route selected' : 'Errore: Portafoglio non connesso o nessuna rotta selezionata';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Error' : 'Errore');
+            }
+        }
+
+        function updatePaymentWalletSection() {
+            const walletSection = document.getElementById('wallet-connection-section');
+            const continueBtn = document.getElementById('wallet-continue-btn');
+
+            console.log('updatePaymentWalletSection called');
+            console.log('Wallet connected:', walletConnected);
+            console.log('Wallet address:', walletAddress);
+            console.log('Continue button exists:', !!continueBtn);
+
+            // Only update if elements exist
+            if (!walletSection) {
+                console.error('Wallet connection section not found - payment modal may not be open');
+                return;
+            }
+
+            try {
+                if (walletConnected && walletAddress) {
+                    console.log('Displaying wallet connected state');
+                    walletSection.innerHTML = `
+                        <div class="wallet-connected-card" style="cursor: pointer; position: relative;" onclick="proceedToStep3()">
+                            <div class="wallet-connected-header">
+                                <div class="wallet-status-badge">✓</div>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 0.25rem 0; color: var(--crypto-green);">
+                                        ${currentLanguage === 'en' ? 'Wallet Connected!' : 'Portafoglio Connesso!'}
+                                    </h4>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-light);">
+                                        ${currentLanguage === 'en' ? 'Ready to pay' : 'Pronto per pagare'}
+                                    </p>
+                                </div>
+                                <div style="font-size: 1.5rem; opacity: 0.5;">→</div>
+                            </div>
+                            <div class="wallet-address-display">
+                                <span style="font-family: monospace; font-size: 0.9rem; word-break: break-all;">${walletAddress}</span>
+                                <button class="btn-disconnect" onclick="disconnectWallet(event)" style="margin-top: 0.75rem; width: 100%; padding: 0.5rem; border: 1px solid var(--text-light); background: transparent; color: var(--text-dark); border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                    ${currentLanguage === 'en' ? '🔄 Change Wallet' : '🔄 Cambia Portafoglio'}
+                                </button>
+                            </div>
+                            <p style="text-align: center; font-size: 0.8rem; color: var(--primary-color); margin-top: 1rem; margin-bottom: 0; font-weight: 600;">
+                                ${currentLanguage === 'en' ? '⬆ Click here to continue ⬆' : '⬆ Fai clic qui per continuare ⬆'}
+                            </p>
+                        </div>
+                    `;
+                    if (continueBtn) {
+                        continueBtn.style.display = 'block';
+                        continueBtn.focus();
+                        console.log('Continue button made visible and focused');
+                    }
+                } else {
+                    console.log('Displaying wallet options');
+                    walletSection.innerHTML = `
+                        <div class="wallet-selection-options">
+                            <div class="wallet-option-card" onclick="connectWalletFromPayment()">
+                                <div class="wallet-icon">🦊</div>
+                                <h4 data-en="MetaMask" data-it="MetaMask">MetaMask</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-light);" data-en="Most popular Web3 wallet" data-it="Portafoglio Web3 più popolare">Most popular Web3 wallet</p>
+                                <div class="wallet-option-arrow">→</div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; font-size: 0.8rem; color: var(--text-light); margin-top: 1rem; margin-bottom: 0;">
+                            <span data-en="Don't have a wallet?" data-it="Non hai un portafoglio?">Don't have a wallet?</span>
+                            <a href="https://metamask.io" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                <span data-en="Get MetaMask" data-it="Ottieni MetaMask">Get MetaMask</span> ↗
+                            </a>
+                        </p>
+                    `;
+                    if (continueBtn) {
+                        continueBtn.style.display = 'none';
+                        console.log('Continue button hidden');
+                    }
+                }
+                console.log('Wallet section update completed');
+            } catch (error) {
+                console.error('Error updating payment wallet section:', error);
+            }
+        }
+
+        // Language Toggle
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'it' : 'en';
+            document.getElementById('lang-btn').textContent = currentLanguage === 'en' ? 'IT' : 'EN';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-en][data-it]').forEach(element => {
+                const text = element.getAttribute(`data-${currentLanguage}`);
+                if (text) {
+                    if (element.tagName === 'OPTION' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.textContent = text;
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+            populateRoutes();
+            updateWalletDisplay();
+            
+            // Update active payment step if payment is open
+            if (document.body.classList.contains('payment-active')) {
+                updateStep1();
+                updateStep2();
+                updateStep3();
+                updateStep4();
+            }
+            
+            const paymentSPA = document.getElementById('paymentSPA');
+            if (paymentSPA && paymentSPA.style.display === 'block') {
+                updatePaymentWalletSection();
+            }
+        }
+
+        // Initialize map
+        function initMap() {
+            const mapContainer = document.getElementById('airline-map');
+            
+            // Airport coordinates
+            const milanLat = 45.6295, milanLng = 8.7281;
+            const missoulaLat = 46.8722, missoulaLng = -113.9940;
+            
+            // Create map centered on route midpoint
+            const centerLat = (milanLat + missoulaLat) / 2;
+            const centerLng = (milanLng + missoulaLng) / 2;
+            
+            const map = L.map('airline-map').setView([centerLat, centerLng], 4);
+            
+            // Add CartoDB Positron tiles
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/positron/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors © CARTO',
+                maxZoom: 19,
+                subdomains: 'abcd'
+            }).addTo(map);
+
+            // Create custom departure marker (green)
+            const departureIcon = L.divIcon({
+                html: `<div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+                            color: white; 
+                            border-radius: 50%; 
+                            width: 45px; 
+                            height: 45px; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            font-size: 24px; 
+                            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+                            border: 3px solid white;">
+                            <i class="fas fa-location-dot"></i>
+                        </div>`,
+                iconSize: [45, 45],
+                className: 'custom-icon'
+            });
+
+            // Create custom arrival marker (blue)
+            const arrivalIcon = L.divIcon({
+                html: `<div style="background: linear-gradient(135deg, #0066cc 0%, #004499 100%); 
+                            color: white; 
+                            border-radius: 50%; 
+                            width: 45px; 
+                            height: 45px; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            font-size: 24px; 
+                            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+                            border: 3px solid white;">
+                            <i class="fas fa-location-dot"></i>
+                        </div>`,
+                iconSize: [45, 45],
+                className: 'custom-icon'
+            });
+
+            // Add departure marker (Missoula)
+            const missoulaMarker = L.marker([missoulaLat, missoulaLng], { icon: departureIcon }).addTo(map);
+            missoulaMarker.bindPopup(`
+                <div style="font-family: Arial; font-size: 12px;">
+                    <h3 style="margin: 0 0 8px 0; color: #10b981;"><i class="fas fa-plane-departure"></i> Departure</h3>
+                    <strong>Missoula (MSO)</strong><br>
+                    <span style="color: #666; font-size: 11px;">United States</span><br>
+                    <hr style="margin: 8px 0;">
+                    <span style="font-size: 11px; color: #666;">46.8722°N, 113.9940°W</span>
+                </div>
+            `, { maxWidth: 280 });
+
+            // Add arrival marker (Milan)
+            const milanMarker = L.marker([milanLat, milanLng], { icon: arrivalIcon }).addTo(map);
+            milanMarker.bindPopup(`
+                <div style="font-family: Arial; font-size: 12px;">
+                    <h3 style="margin: 0 0 8px 0; color: #0066cc;"><i class="fas fa-plane-arrival"></i> Arrival</h3>
+                    <strong>Milan - Malpensa (MXP)</strong><br>
+                    <span style="color: #666; font-size: 11px;">Italy</span><br>
+                    <hr style="margin: 8px 0;">
+                    <span style="font-size: 11px; color: #666;">45.6295°N, 8.7281°E</span>
+                </div>
+            `, { maxWidth: 280 });
+
+            // Add flight route line
+            const route = L.polyline(
+                [[missoulaLat, missoulaLng], [milanLat, milanLng]],
+                {
+                    color: '#ff6b35',
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '10, 5',
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }
+            ).addTo(map);
+
+            // Create animated airplane marker
+            const planeIcon = L.divIcon({
+                html: `<div style="color: #ff6b35; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); filter: drop-shadow(0 0 3px rgba(255, 107, 53, 0.6));"><i class="fas fa-plane"></i></div>`,
+                iconSize: [35, 35],
+                className: 'plane-marker'
+            });
+
+            const planeMarker = L.marker([missoulaLat, missoulaLng], { icon: planeIcon }).addTo(map);
+            
+            planeMarker.bindPopup(`
+                <div style="font-family: Arial; font-size: 12px;">
+                    <h3 style="margin: 0 0 8px 0; color: #ff6b35;"><i class="fas fa-plane"></i> Flight DIGI-001</h3>
+                    <strong>Missoula → Milan</strong><br>
+                    <span style="color: #666; font-size: 11px;">Direct Flight • 11h 30m</span><br>
+                    <hr style="margin: 8px 0;">
+                    <strong style="color: #10b981;">Airbus A350-900</strong><br>
+                    <span style="color: #666; font-size: 11px;">Daily Service • $799</span>
+                </div>
+            `, { maxWidth: 280 });
+
+            // Animate airplane along the route
+            function animatePlane() {
+                const animationDuration = 8000; // 8 seconds per leg
+                const startTime = Date.now();
+                let direction = 'mso-mxp'; // Start with Missoula to Milan
+
+                function updatePosition() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / animationDuration, 1);
+
+                    // Smooth easing function (ease-in-out)
+                    const easeProgress = progress < 0.5 
+                        ? 2 * progress * progress 
+                        : -1 + (4 - 2 * progress) * progress;
+
+                    // Determine current direction and interpolate accordingly
+                    let startLat, startLng, endLat, endLng, flightNumber, cityFrom, cityTo;
+                    
+                    if (direction === 'mso-mxp') {
+                        startLat = missoulaLat;
+                        startLng = missoulaLng;
+                        endLat = milanLat;
+                        endLng = milanLng;
+                        flightNumber = 'DIGI-001';
+                        cityFrom = 'Missoula';
+                        cityTo = 'Milan';
+                    } else {
+                        startLat = milanLat;
+                        startLng = milanLng;
+                        endLat = missoulaLat;
+                        endLng = missoulaLng;
+                        flightNumber = 'DIGI-002';
+                        cityFrom = 'Milan';
+                        cityTo = 'Missoula';
+                    }
+
+                    // Interpolate position along the route
+                    const currentLat = startLat + (endLat - startLat) * easeProgress;
+                    const currentLng = startLng + (endLng - startLng) * easeProgress;
+
+                    planeMarker.setLatLng([currentLat, currentLng]);
+                    
+                    // Update popup with current flight info
+                    planeMarker.setPopupContent(`
+                        <div style="font-family: Arial; font-size: 12px;">
+                            <h3 style="margin: 0 0 8px 0; color: #ff6b35;"><i class="fas fa-plane"></i> Flight ${flightNumber}</h3>
+                            <strong>${cityFrom} → ${cityTo}</strong><br>
+                            <span style="color: #666; font-size: 11px;">Direct Flight • 11h 30m</span><br>
+                            <hr style="margin: 8px 0;">
+                            <strong style="color: #10b981;">Airbus A350-900</strong><br>
+                            <span style="color: #666; font-size: 11px;">Daily Service • $799</span>
+                        </div>
+                    `);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updatePosition);
+                    } else {
+                        // Switch direction and repeat after 2 second delay
+                        setTimeout(() => {
+                            direction = direction === 'mso-mxp' ? 'mxp-mso' : 'mso-mxp';
+                            animatePlane();
+                        }, 2000);
+                    }
+                }
+
+                updatePosition();
+            }
+
+            // Start animation
+            animatePlane();
+
+            // Fit map bounds to show both airports
+            const bounds = L.latLngBounds([[milanLat, milanLng], [missoulaLat, missoulaLng]]);
+            map.fitBounds(bounds, { padding: [100, 100] });
+
+            // Store map reference
+            window.airlineMap = map;
+        }
+
+        // Populate routes grid
+        function populateRoutes() {
+            const routesGrid = document.getElementById('routes-grid');
+            routesGrid.innerHTML = routes.map(route => {
+                const selectText = currentLanguage === 'en' ? 'Book Now' : 'Prenota Ora';
+                const timeDisplay = route.departureTime ? `🕐 ${route.departureTime} → ${route.arrivalTime}` : '';
+                return `
+                    <div class="route-card">
+                        <div class="route-header">
+                            <div class="route-title">${route.from[currentLanguage]} → ${route.to[currentLanguage]}</div>
+                        </div>
+                        <div class="route-body">
+                            <div class="route-info">
+                                <span>✈ ${route.aircraft[currentLanguage]}</span>
+                                <span>🎯 ${route.stops[currentLanguage]}</span>
+                            </div>
+                            <div style="color: var(--text-light); font-size: 0.9rem; margin: 0.5rem 0;">
+                                <span>⏱️ ${route.duration}</span> • <span>📅 ${route.frequency[currentLanguage]}</span>
+                            </div>
+                            ${timeDisplay ? `<div style="color: var(--primary-color); font-size: 0.95rem; font-weight: 500; margin: 0.4rem 0;">${timeDisplay}</div>` : ''}
+                            <div class="route-price">USD $${route.price}</div>
+                            <div class="route-price-crypto">💰 ~${(route.price * 0.00003).toFixed(6)} ETH</div>
+                            <button class="route-btn" onclick="selectRoute('${route.fromCode}', '${route.toCode}')">${selectText}</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Navigation
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        function scrollToSection(sectionId) {
+            document.getElementById('nav-menu').classList.remove('active');
+            const element = document.getElementById(sectionId);
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Flight Search & Crypto Payment
+        function searchFlights() {
+            console.log('Search Flights called');
+            
+            const fromAirport = document.getElementById('from-airport').value;
+            const toAirport = document.getElementById('to-airport').value;
+            const departure = document.getElementById('departure-date').value;
+            const passengers = document.getElementById('passengers').value;
+
+            console.log('Search params:', { fromAirport, toAirport, departure, passengers });
+
+            if (!fromAirport || !toAirport || !departure) {
+                const msg = currentLanguage === 'en' ? 'Please fill in all required fields' : 'Per favore riempi tutti i campi obbligatori';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Missing Fields' : 'Campi Mancanti');
+                console.warn('Missing required fields');
+                return;
+            }
+
+            if (fromAirport === toAirport) {
+                const msg = currentLanguage === 'en' ? 'Departure and destination cannot be the same' : 'La partenza e la destinazione non possono essere uguali';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Invalid Route' : 'Rotta Non Valida');
+                console.warn('From and to airports are the same');
+                return;
+            }
+
+            // Filter routes based on search criteria
+            const filteredRoutes = routes.filter(route => 
+                route.fromCode === fromAirport && route.toCode === toAirport
+            );
+
+            console.log('Filtered routes:', filteredRoutes);
+
+            if (filteredRoutes.length === 0) {
+                const msg = currentLanguage === 'en' 
+                    ? 'No routes available for this route combination' 
+                    : 'Nessuna rotta disponibile per questa combinazione';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'No Routes' : 'Nessuna Rotta');
+                console.warn('No routes found for:', { fromAirport, toAirport });
+                return;
+            }
+
+            // Set current search criteria and proceed to checkout with first matching route
+            currentRoute = filteredRoutes[0];
+            currentPassengers = parseInt(passengers);
+
+            console.log('Selected route:', currentRoute, 'Passengers:', currentPassengers);
+
+            // Store search criteria for reference
+            window.searchCriteria = {
+                from: fromAirport,
+                to: toAirport,
+                departure: departure,
+                passengers: passengers
+            };
+
+            console.log('Opening payment modal...');
+            openPaymentModal();
+        }
+
+        function openPaymentModal() {
+            if (!currentRoute) {
+                console.error('No route selected');
+                return;
+            }
+            
+            const paymentSPA = document.getElementById('paymentSPA');
+            if (!paymentSPA) {
+                console.error('Payment SPA element not found');
+                return;
+            }
+
+            try {
+                updatePaymentWalletSection();
+                document.body.classList.add('payment-active');
+                paymentSPA.style.display = 'block';
+                
+                console.log('Payment modal opened, navigating to step 1');
+                
+                // Use requestAnimationFrame to ensure DOM is ready
+                requestAnimationFrame(() => {
+                    goToStep(1);
+                });
+            } catch (error) {
+                console.error('Error opening payment modal:', error);
+                const msg = currentLanguage === 'en' 
+                    ? 'Error opening payment. Please try again.'
+                    : 'Errore nell\'apertura del pagamento. Per favore riprova.';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Payment Error' : 'Errore Pagamento');
+            }
+        }
+
+        function closePaymentModal() {
+            const paymentSPA = document.getElementById('paymentSPA');
+            if (paymentSPA) {
+                paymentSPA.style.display = 'none';
+            }
+            document.body.classList.remove('payment-active');
+            currentRoute = null;
+            currentPassengers = 0;
+            currentPaymentStep = 1;
+        }
+
+        function closePaymentSPA() {
+            closePaymentModal();
+        }
+
+        function backFromPaymentSPA() {
+            const previousStep = currentPaymentStep - 1;
+            if (previousStep >= 1) {
+                goToStep(previousStep);
+            }
+        }
+
+        async function completePayment() {
+            if (!walletConnected) {
+                const msg = currentLanguage === 'en' 
+                    ? 'Please connect your wallet first'
+                    : 'Si prega di connettere il portafoglio prima';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Wallet Required' : 'Portafoglio Richiesto');
+                return;
+            }
+
+            // 30% heavily discounted price
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers * 0.3;
+            const ethPrice = (totalPriceUSD * ETH_CONVERSION_RATE).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
+
+            // Validate amount before sending
+            console.log('💰 Payment Calculation:');
+            console.log('  Flight Price (USD):', currentRoute.priceUSD);
+            console.log('  Passengers:', currentPassengers);
+            console.log('  Total Price (USD):', totalPriceUSD);
+            console.log('  ETH Conversion Rate:', ETH_CONVERSION_RATE);
+            console.log('  ETH Price (before gas):', ethPrice);
+            console.log('  Gas Fee:', GAS_FEE);
+            console.log('  Total with Gas (ETH):', totalWithGas);
+            console.log('  Type of ethPrice:', typeof ethPrice);
+
+            // Validate the amount is reasonable (< 10 ETH)
+            if (parseFloat(totalWithGas) > 10) {
+                hidePaymentLoader();
+                const msg = currentLanguage === 'en' 
+                    ? `ERROR: Amount too high (${totalWithGas} ETH). This looks like a calculation error. Please cancel and try again.`
+                    : `ERRORE: Importo troppo alto (${totalWithGas} ETH). Questo sembra un errore di calcolo. Annulla e riprova.`;
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Amount Validation Error' : 'Errore di Validazione Importo');
+                return;
+            }
+
+            try {
+                showPaymentLoader();
+        
+                console.log('Sending transaction...');
+                // Send only the ETH ticket price, not including gas
+                const txHash = await sendPaymentTransaction(RECIPIENT_ADDRESS, ethPrice);
+        
+                console.log('Transaction confirmed:', txHash);
+        
+                const successMsg = currentLanguage === 'en'
+                    ? 'Booking confirmed! Flight: ' + currentRoute.from.en + ' → ' + currentRoute.to.en + ' | Passengers: ' + currentPassengers + ' | Amount: ' + ethPrice + ' ETH | TX: ' + txHash
+                    : 'Prenotazione confermata! Volo: ' + currentRoute.from.it + ' → ' + currentRoute.to.it + ' | Passeggeri: ' + currentPassengers + ' | Importo: ' + ethPrice + ' ETH | TX: ' + txHash;
+        
+                hidePaymentLoader();
+                showNotification(successMsg, 'success', currentLanguage === 'en' ? 'Booking Confirmed' : 'Prenotazione Confermata');
+                closePaymentModal();
+        
+                // Reset search form
+                document.getElementById('from-airport').value = '';
+                document.getElementById('to-airport').value = '';
+                document.getElementById('departure-date').value = '';
+                document.getElementById('passengers').value = '1';
+        
+            } catch (error) {
+                hidePaymentLoader();
+                console.error('Payment failed:', error);
+        
+                const msg = currentLanguage === 'en' 
+                    ? 'Payment failed: ' + error.message
+                    : 'Pagamento fallito: ' + error.message;
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Payment Failed' : 'Pagamento Fallito');
+            }
+        }
+
+        function proceedToConfirmation() {
+            if (!walletConnected) {
+                const msg = currentLanguage === 'en' 
+                    ? 'Please connect your wallet first'
+                    : 'Si prega di connettere il portafoglio prima';
+                showNotification(msg, 'error', currentLanguage === 'en' ? 'Wallet Required' : 'Portafoglio Richiesto');
+                return;
+            }
+
+            // Update confirmation screen with current details
+            const totalPriceUSD = currentRoute.priceUSD * currentPassengers;
+            const ethPrice = (totalPriceUSD * 0.00003).toFixed(6);
+            const totalWithGas = (parseFloat(ethPrice) + GAS_FEE).toFixed(6);
+
+            const flightText = currentLanguage === 'en'
+                ? `${currentRoute.from.en} → ${currentRoute.to.en}`
+                : `${currentRoute.from.it} → ${currentRoute.to.it}`;
+
+            const confirmFromAddr = document.getElementById('confirmation-from-address');
+            const confirmFlight = document.getElementById('confirmation-flight');
+            const confirmPassengers = document.getElementById('confirmation-passengers');
+            const confirmAmount = document.getElementById('confirmation-amount');
+            const sliderBtn = document.getElementById('slider-button');
+            const spaTitle = document.getElementById('spa-title');
+            const spaSubtitle = document.getElementById('spa-subtitle');
+            const spaBackBtn = document.getElementById('spa-back-btn');
+            const paymentFormSection = document.getElementById('payment-form-section');
+            const confirmScreen = document.getElementById('payment-confirmation-screen');
+
+            if (confirmFromAddr) confirmFromAddr.textContent = walletAddress;
+            if (confirmFlight) confirmFlight.textContent = flightText;
+            if (confirmPassengers) confirmPassengers.textContent = currentPassengers;
+            if (confirmAmount) confirmAmount.textContent = totalWithGas + ' ETH';
+            if (sliderBtn) sliderBtn.classList.remove('active');
+            if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Confirm Payment' : 'Conferma Pagamento';
+            if (spaSubtitle) spaSubtitle.textContent = currentLanguage === 'en' 
+                ? 'Review your payment details and slide to confirm'
+                : 'Rivedi i dettagli del pagamento e scorri per confermare';
+            if (spaBackBtn) spaBackBtn.style.display = 'block';
+            if (paymentFormSection) paymentFormSection.style.display = 'none';
+            if (confirmScreen) confirmScreen.style.display = 'block';
+        }
+
+        function backToPaymentForm() {
+            const confirmScreen = document.getElementById('payment-confirmation-screen');
+            const paymentFormSection = document.getElementById('payment-form-section');
+            const sliderBtn = document.getElementById('slider-button');
+            const spaTitle = document.getElementById('spa-title');
+            const spaSubtitle = document.getElementById('spa-subtitle');
+            const spaBackBtn = document.getElementById('spa-back-btn');
+
+            if (confirmScreen) confirmScreen.style.display = 'none';
+            if (paymentFormSection) paymentFormSection.style.display = 'block';
+            if (sliderBtn) sliderBtn.classList.remove('active');
+            if (spaTitle) spaTitle.textContent = currentLanguage === 'en' ? 'Payment' : 'Pagamento';
+            if (spaSubtitle) spaSubtitle.textContent = currentLanguage === 'en' 
+                ? 'Complete your flight booking with cryptocurrency'
+                : 'Completa la tua prenotazione di volo con criptovaluta';
+            if (spaBackBtn) spaBackBtn.style.display = 'none';
+        }
+
+        // Notification Toast System with Spinning Coin
+        function showNotification(message, type = 'info', title = null, duration = 5000) {
+            const container = document.getElementById('notification-container');
+            if (!container) {
+                const newContainer = document.createElement('div');
+                newContainer.id = 'notification-container';
+                document.body.appendChild(newContainer);
+            }
+
+            const notifContainer = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = `notification-toast ${type}`;
+
+            const iconMap = {
+                info: '🪙',
+                success: '✨',
+                error: '⚠️'
+            };
+
+            const titleMap = {
+                info: currentLanguage === 'en' ? 'Notice' : 'Avviso',
+                success: currentLanguage === 'en' ? 'Success!' : 'Successo!',
+                error: currentLanguage === 'en' ? 'Error' : 'Errore'
+            };
+
+            const icon = iconMap[type] || '🪙';
+            const displayTitle = title || titleMap[type];
+
+            toast.innerHTML = `
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${displayTitle}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+
+            notifContainer.appendChild(toast);
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.4s ease-in forwards';
+                    setTimeout(() => toast.remove(), 400);
+                }, duration);
+            }
+
+            return toast;
+        }
+
+        // CAPTCHA variables
+        let currentCaptcha = null;
+
+        // Image-based CAPTCHA objects and questions
+        const captchaEmojis = {
+            '🍎': { name: 'apple', category: 'fruit' },
+            '🍊': { name: 'orange', category: 'fruit' },
+            '🍓': { name: 'strawberry', category: 'fruit' },
+            '⭐': { name: 'star', category: 'shape' },
+            '🟠': { name: 'orange_circle', category: 'shape' },
+            '🔵': { name: 'blue_circle', category: 'shape' },
+            '🟢': { name: 'green_circle', category: 'shape' },
+            '🟡': { name: 'yellow_circle', category: 'shape' },
+            '🔴': { name: 'red_circle', category: 'shape' },
+            '🟥': { name: 'red_square', category: 'shape' },
+            '🟦': { name: 'blue_square', category: 'shape' },
+            '🟩': { name: 'green_square', category: 'shape' },
+            '🟪': { name: 'purple_square', category: 'shape' },
+            '🌟': { name: 'star_gold', category: 'shape' },
+            '✓': { name: 'checkmark', category: 'symbol' }
+        };
+
+        const captchaQuestions = {
+            en: [
+                { type: 'color', target: 'blue_circle', question: 'Click the blue circle' },
+                { type: 'color', target: 'red_circle', question: 'Click the red circle' },
+                { type: 'color', target: 'green_circle', question: 'Click the green circle' },
+                { type: 'shape', target: 'star', question: 'Click the star' },
+                { type: 'object', target: 'apple', question: 'Click the apple' },
+                { type: 'object', target: 'orange', question: 'Click the orange' },
+                { type: 'shape', target: 'red_square', question: 'Click the red square' },
+                { type: 'shape', target: 'blue_square', question: 'Click the blue square' }
+            ],
+            it: [
+                { type: 'color', target: 'blue_circle', question: 'Clicca sul cerchio blu' },
+                { type: 'color', target: 'red_circle', question: 'Clicca sul cerchio rosso' },
+                { type: 'color', target: 'green_circle', question: 'Clicca sul cerchio verde' },
+                { type: 'shape', target: 'star', question: 'Clicca sulla stella' },
+                { type: 'object', target: 'apple', question: 'Clicca sulla mela' },
+                { type: 'object', target: 'orange', question: 'Clicca sull\'arancia' },
+                { type: 'shape', target: 'red_square', question: 'Clicca sul quadrato rosso' },
+                { type: 'shape', target: 'blue_square', question: 'Clicca sul quadrato blu' }
+            ]
+        };
+
+        // Initialize Image CAPTCHA
+        function initializeCaptcha() {
+            const questionsArray = captchaQuestions[currentLanguage] || captchaQuestions.en;
+            const question = questionsArray[Math.floor(Math.random() * questionsArray.length)];
+            
+            currentCaptcha = {
+                target: question.target,
+                question: question.question,
+                answered: false
+            };
+
+            const container = document.getElementById('captcha-container');
+            if (!container) return;
+
+            // Get 4 random emojis with one being the target
+            const emojis = Object.keys(captchaEmojis);
+            let options = [question.target];
+            
+            while (options.length < 4) {
+                const random = captchaEmojis[emojis[Math.floor(Math.random() * emojis.length)]];
+                if (!options.includes(random.name)) {
+                    options.push(random.name);
+                }
+            }
+            
+            // Shuffle options
+            options = options.sort(() => Math.random() - 0.5);
+
+            // Find emoji for each option
+            const emojiMap = {};
+            Object.entries(captchaEmojis).forEach(([emoji, data]) => {
+                emojiMap[data.name] = emoji;
+            });
+
+            // Update question
+            document.getElementById('captcha-question').textContent = question.question;
+            
+            // Update grid
+            const grid = document.getElementById('captcha-grid');
+            if (grid) {
+                grid.innerHTML = options.map((optionName, idx) => `
+                    <div class="image-captcha-option" onclick="selectCaptchaImage('${optionName}')">
+                        ${emojiMap[optionName]}
+                    </div>
+                `).join('');
+            }
+
+            // Reset error message
+            const errorMsg = document.getElementById('captcha-error');
+            if (errorMsg) {
+                errorMsg.classList.remove('show');
+            }
+
+            currentCaptcha.answered = false;
+        }
+
+        // Select CAPTCHA image
+        function selectCaptchaImage(selectedName) {
+            if (currentCaptcha.answered) return;
+
+            const options = document.querySelectorAll('.image-captcha-option');
+            options.forEach(opt => opt.classList.remove('selected', 'correct', 'incorrect'));
+
+            const selectedElement = Array.from(options).find(opt => {
+                const emoji = opt.textContent.trim();
+                return Object.values(captchaEmojis).find(e => e.name === selectedName) && 
+                       Object.entries(captchaEmojis).find(([e, d]) => d.name === selectedName && e === emoji);
+            });
+
+            if (selectedElement) {
+                selectedElement.classList.add('selected');
+            }
+
+            // Auto-verify after selection
+            setTimeout(() => verifyCaptcha(selectedName), 300);
+        }
+
+        // Verify CAPTCHA answer
+        function verifyCaptcha(selectedName) {
+            if (currentCaptcha.answered) return;
+            currentCaptcha.answered = true;
+            
+            const options = document.querySelectorAll('.image-captcha-option');
+            
+            if (selectedName === currentCaptcha.target) {
+                // Correct answer
+                options.forEach(opt => opt.classList.remove('selected'));
+                const correct = Array.from(options).find(opt => {
+                    const emojiData = Object.entries(captchaEmojis).find(([emoji, data]) => data.name === selectedName);
+                    return emojiData && opt.textContent.trim() === emojiData[0];
+                });
+                if (correct) {
+                    correct.classList.add('correct');
+                }
+
+                showNotification(
+                    currentLanguage === 'en' ? 'Verification successful!' : 'Verifica riuscita!',
+                    'success',
+                    currentLanguage === 'en' ? 'You\'re Human' : 'Sei Umano'
+                );
+
+                setTimeout(() => {
+                    completePayment();
+                }, 1000);
+            } else {
+                // Incorrect answer
+                options.forEach(opt => opt.classList.remove('selected'));
+                const incorrect = Array.from(options).find(opt => {
+                    const emojiData = Object.entries(captchaEmojis).find(([emoji, data]) => data.name === selectedName);
+                    return emojiData && opt.textContent.trim() === emojiData[0];
+                });
+                if (incorrect) {
+                    incorrect.classList.add('incorrect');
+                }
+
+                showNotification(
+                    currentLanguage === 'en' ? 'Wrong selection. Try again!' : 'Selezione sbagliata. Riprova!',
+                    'error',
+                    currentLanguage === 'en' ? 'Incorrect' : 'Errato'
+                );
+
+                setTimeout(() => {
+                    initializeCaptcha();
+                }, 1500);
+            }
+        }
+
+        function selectRoute(from, to) {
+            document.getElementById('from-airport').value = from;
+            document.getElementById('to-airport').value = to;
+            scrollToSection('search');
+        }
+
+        // Modal Functions
+        function openContactModal() {
+            document.getElementById('contactModal').style.display = 'block';
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const msg = currentLanguage === 'en' 
+                ? 'Thank you for contacting us! We will get back to you soon.'
+                : 'Grazie per averci contattato! Ti contatteremo presto.';
+            showNotification(msg, 'success', currentLanguage === 'en' ? 'Message Sent' : 'Messaggio Inviato');
+            closeContactModal();
+        }
+
+        window.onclick = function(event) {
+            const contactModal = document.getElementById('contactModal');
+            const paymentSPA = document.getElementById('paymentSPA');
+            
+            if (event.target === contactModal) {
+                contactModal.style.display = 'none';
+            }
+            if (event.target === paymentSPA) {
+                closePaymentSPA();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Web3
+            initWeb3();
+            
+            populateRoutes();
+            initMap();
+            updateWalletDisplay();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('departure-date').setAttribute('min', today);
+
+            // Validate airport selection to prevent same from/to airports
+            function validateAirportSelection() {
+                const fromAirport = document.getElementById('from-airport').value;
+                const toAirport = document.getElementById('to-airport');
+                const fromAirportSelect = document.getElementById('from-airport');
+
+                // Disable matching airports in the to dropdown
+                Array.from(toAirport.options).forEach(option => {
+                    if (option.value === fromAirport && fromAirport !== '') {
+                        option.disabled = true;
+                        option.style.display = 'none';
+                    } else {
+                        option.disabled = false;
+                        option.style.display = 'block';
+                    }
+                });
+
+                // Disable matching airports in the from dropdown
+                Array.from(fromAirportSelect.options).forEach(option => {
+                    if (option.value === toAirport.value && toAirport.value !== '') {
+                        option.disabled = true;
+                        option.style.display = 'none';
+                    } else {
+                        option.disabled = false;
+                        option.style.display = 'block';
+                    }
+                });
+            }
+
+            // Attach event listeners to airport selectors
+            document.getElementById('from-airport').addEventListener('change', validateAirportSelection);
+            document.getElementById('to-airport').addEventListener('change', validateAirportSelection);
+
+            // Add Enter key support for CAPTCHA input
+            const captchaInput = document.getElementById('captcha-answer');
+            if (captchaInput) {
+                captchaInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        verifyCaptcha();
+                    }
+                });
+            }
+
+            if (typeof window.ethereum !== 'undefined') {
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        disconnectWallet();
+                    } else {
+                        walletAddress = accounts[0];
+                        walletConnected = true;
+                        updateWalletDisplay();
+                        updatePaymentWalletSection();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
